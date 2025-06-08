@@ -1,0 +1,46 @@
+services:
+  server:
+    build: 
+      context: .
+      # target: development
+    image: vogue:dev
+    container_name: vogue-dev
+    restart: always
+    environment:
+      - NODE_ENV=development
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    networks:
+      - vogue-network
+
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DB}
+    networks:
+      - vogue-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  vogue-network:
+    driver: bridge
