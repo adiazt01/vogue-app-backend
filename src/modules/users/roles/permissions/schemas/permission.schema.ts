@@ -7,13 +7,13 @@ import { ActionsPermissions } from '../../../enums/actions-permissions.enum';
 export class Permission extends Document {
   @Prop({
     required: true,
-    enum: Object.values(ActionsPermissions),
+    enum: ActionsPermissions,
   })
   action: ActionsPermissions;
 
   @Prop({
     required: true,
-    enum: Object.values(Resources),
+    enum: Resources,
   })
   resource: Resources;
 }
