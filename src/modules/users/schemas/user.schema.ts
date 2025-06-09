@@ -17,13 +17,11 @@ export class User extends Document {
   @Prop({ required: true })
   username: string;
 
-  @Prop([
-    {
-      type: Types.ObjectId,
-      ref: Role.name,
-      autopopulate: true,
-    },
-  ])
+  @Prop({
+    type: [Types.ObjectId],
+    ref: Role.name,
+    autopopulate: true,
+  })
   roles: Role[];
 }
 

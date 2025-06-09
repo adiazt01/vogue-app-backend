@@ -1,4 +1,4 @@
-export enum Resources {
+export enum RESOURCES {
   USERS = 'USERS',
   ROLES = 'ROLES',
   PERMISSIONS = 'PERMISSIONS',

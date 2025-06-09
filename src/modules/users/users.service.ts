@@ -43,14 +43,18 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    console.log('Finding user with ID:', id);
     const userFound = await this.userModel
       .findById(id)
-      .populate('roles', null, this.roleModel)
-      .populate('roles.permissions', 'actions resource', this.permissionModel)
+      .populate({
+        path: this.roleModel.collection.name,
+        model: this.roleModel,
+        populate: {
+          path: this.permissionModel.collection.name,
+          model: this.permissionModel,
+        },
+      })
       .exec();
 
-    console.log('User found:', userFound);
     if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
 
     return userFound;

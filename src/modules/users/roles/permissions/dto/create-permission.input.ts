@@ -1,20 +1,20 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { ActionsPermissions } from '@users/enums/actions-permissions.enum';
-import { Resources } from '@users/enums/resources.enum';
+import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
+import { RESOURCES } from '@users/enums/resources.enum';
 
 @InputType({
   description: 'Input type for creating a new permission',
 })
 export class CreatePermissionInput {
-  @Field(() => ActionsPermissions, {
+  @Field(() => ACTIONS_PERMISSIONS, {
     description: 'The action associated with the permission',
     nullable: false,
   })
-  action: ActionsPermissions;
+  action: ACTIONS_PERMISSIONS;
 
-  @Field(() => Resources, {
+  @Field(() => RESOURCES, {
     description: 'The resource associated with the permission',
     nullable: false,
   })
-  resource: Resources;
+  resource: RESOURCES;
 }

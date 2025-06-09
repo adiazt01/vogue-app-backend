@@ -6,10 +6,10 @@ import {
   MongoAbility,
 } from '@casl/ability';
 import { UsersService } from '@users/users.service';
-import { ActionsPermissions } from '@users/enums/actions-permissions.enum';
-import { Resources } from '@users/enums/resources.enum';
+import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
+import { RESOURCES } from '@users/enums/resources.enum';
 
-export type AppAbility = MongoAbility<[ActionsPermissions, Resources]>;
+export type AppAbility = MongoAbility<[ACTIONS_PERMISSIONS, RESOURCES]>;
 
 @Injectable()
 export class AbilityFactory {

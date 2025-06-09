@@ -1,21 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
-import { Resources } from '../../../enums/resources.enum';
-import { ActionsPermissions } from '../../../enums/actions-permissions.enum';
+import { ACTIONS_PERMISSIONS } from '../../../enums/actions-permissions.enum';
+import { RESOURCES } from '@users/enums/resources.enum';
 
 @Schema()
 export class Permission extends Document {
   @Prop({
     required: true,
-    enum: ActionsPermissions,
+    enum: ACTIONS_PERMISSIONS,
   })
-  action: ActionsPermissions;
+  action: ACTIONS_PERMISSIONS;
 
   @Prop({
     required: true,
-    enum: Resources,
+    enum: RESOURCES,
   })
-  resource: Resources;
+  resource: RESOURCES;
 }
 
 export type PermissionDocument = HydratedDocument<Permission>;
