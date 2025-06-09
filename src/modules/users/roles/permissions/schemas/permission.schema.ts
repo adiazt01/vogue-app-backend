@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Resources } from '../enums/resources.enum';
-import { ActionsPermissions } from '../enums/actions-permissions.enum';
+import { Document, HydratedDocument } from 'mongoose';
+import { Resources } from '../../../enums/resources.enum';
+import { ActionsPermissions } from '../../../enums/actions-permissions.enum';
 
 @Schema()
 export class Permission extends Document {
@@ -18,7 +18,7 @@ export class Permission extends Document {
   resource: Resources;
 }
 
-export type PermissionDocument = Permission & Document;
+export type PermissionDocument = HydratedDocument<Permission>;
 
 export const PermissionSchema = SchemaFactory.createForClass(Permission);
 

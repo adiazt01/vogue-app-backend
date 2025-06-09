@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { HashService } from '@common/hash/hash.service';
@@ -7,7 +7,9 @@ import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { PaginationOptionsDto } from '@common/dtos/pagination/pagination-options.dto';
 import { PaginatedUsersOutput } from './dto/paginated-users.output';
-import { PaginationMetadataDto } from '@common/dtos/pagination/pagination-metadata.dto';
+import { paginate } from '@common/utils/pagination/paginate.util';
+import { Role } from './roles/schemas/role.schema';
+import { Permission } from './roles/permissions/schemas/permission.schema';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +17,10 @@ export class UsersService {
     private readonly hashService: HashService,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+    @InjectModel(Role.name)
+    private readonly roleModel: Model<Role>,
+    @InjectModel(Permission.name)
+    private readonly permissionModel: Model<Permission>,
   ) {}
 
   async create(createUserInput: CreateUserInput) {
@@ -33,31 +39,47 @@ export class UsersService {
   async findAll(
     paginationOptions: PaginationOptionsDto,
   ): Promise<PaginatedUsersOutput> {
-    const { page = 1, take = 10 } = paginationOptions;
-    const skip = (page - 1) * take;
-
-    const [items, totalItems] = await Promise.all([
-      this.userModel.find().skip(skip).limit(take).exec(),
-      this.userModel.countDocuments().exec(),
-    ]);
-
-    const meta = new PaginationMetadataDto({
-      paginationOptionsDto: paginationOptions,
-      itemCount: totalItems,
-    });
-
-    return { items, meta };
+    return await paginate(this.userModel, paginationOptions);
   }
 
-  findOne(id: number) {
-    return this.userModel.findById(id).exec();
+  async findOne(id: string) {
+    console.log('Finding user with ID:', id);
+    const userFound = await this.userModel
+      .findById(id)
+      .populate('roles', null, this.roleModel)
+      .populate('roles.permissions', 'actions resource', this.permissionModel)
+      .exec();
+
+    console.log('User found:', userFound);
+    if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
+
+    return userFound;
+  }
+  async findOneByEmail(email: string) {
+    const userFound = await this.userModel.findOne({ email });
+
+    return userFound;
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserInput: UpdateUserInput) {
+    const userFound = await this.userModel.findByIdAndUpdate(
+      id,
+      updateUserInput,
+      {
+        new: true,
+      },
+    );
+
+    if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
+
+    return userFound;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const userFound = await this.userModel.findByIdAndDelete(id);
+
+    if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
+
+    return userFound;
   }
 }

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Permission } from './permission.schema';
-import { Document, Types } from 'mongoose';
+import { Permission } from '../permissions/schemas/permission.schema';
+import { Document, HydratedDocument, Types } from 'mongoose';
 
 @Schema()
 export class Role extends Document {
@@ -11,12 +11,13 @@ export class Role extends Document {
   description: string;
 
   @Prop({
-    type: [{ type: Types.ObjectId, ref: Permission.name }],
-    default: [],
+    type: [Types.ObjectId],
+    ref: Permission.name,
+    autopopulate: true,
   })
-  permissions: Types.ObjectId[];
+  permissions: Permission[];
 }
 
-export type RoleDocument = Role & Document;
+export type RoleDocument = HydratedDocument<Role>;
 
 export const RoleSchema = SchemaFactory.createForClass(Role);
