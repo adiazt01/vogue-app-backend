@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { envs } from 'src/config/env.config';
 
 @Injectable()
@@ -10,6 +10,7 @@ export class HashService {
     try {
       return await bcrypt.hash(password, this.saltRounds);
     } catch (error) {
+      console.error('Hashing error:', error);
       throw new Error('Hashing failed: Unknown error');
     }
   }
@@ -18,6 +19,7 @@ export class HashService {
     try {
       return await bcrypt.compare(input, inputHashed);
     } catch (error) {
+      console.error('Comparison error:', error);
       throw new Error('Comparison failed: Unknown error');
     }
   }
