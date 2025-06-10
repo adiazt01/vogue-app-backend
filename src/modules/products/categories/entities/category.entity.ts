@@ -1,7 +1,13 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 
 @ObjectType()
 export class Category {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => String, { description: 'Name of the category' })
+  name: string;
+
+  @Field(() => String, {
+    description: 'Description of the category',
+    nullable: true,
+  })
+  description?: string;
 }

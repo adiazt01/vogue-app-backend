@@ -4,7 +4,9 @@ import { Document, HydratedDocument } from 'mongoose';
 @Schema({
   timestamps: true,
 })
-export class Category extends Document {
+export class Tag extends Document {
+  declare _id: string;
+
   @Prop({
     required: true,
     unique: true,
@@ -17,8 +19,6 @@ export class Category extends Document {
   description?: string;
 }
 
-export type CategoryDocument = HydratedDocument<Category>;
+export type TagDocument = HydratedDocument<Tag>;
 
-export const CategorySchema = SchemaFactory.createForClass(Category);
-
-CategorySchema.index({ name: 1 }, { unique: true });
+export const TagSchema = SchemaFactory.createForClass(Tag);

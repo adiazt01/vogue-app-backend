@@ -1,23 +1,33 @@
-import { Prop, Schema } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
+import { Category } from '../categories/entities/category.entity';
+import { Tag } from '../tags/schemas/tag.schema';
 
-@Schema({
-  timestamps: true,
-})
+@Schema({ timestamps: true })
 export class Product extends Document {
-  declare _id: string;
-
   @Prop({ required: true, unique: true })
   name: string;
 
-  @Prop({ required: false })
-  description: string;
+  @Prop()
+  description?: string;
 
   @Prop({ required: true })
   price: number;
 
   @Prop({
     type: Types.ObjectId,
-    ref:
+    ref: Category.name,
+    required: true,
   })
+  category: Types.ObjectId | Category;
+
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: Tag.name }],
+    default: [],
+  })
+  tags: (Types.ObjectId | Tag)[];
 }
+
+export type ProductDocument = HydratedDocument<Product>;
+
+export const ProductSchema = SchemaFactory.createForClass(Product);

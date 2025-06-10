@@ -1,7 +1,21 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
-@InputType()
+@InputType({
+  description: 'Input type for creating a new category',
+})
 export class CreateCategoryInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => String, { description: 'Name of the category' })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(100)
+  name: string;
+
+  @Field(() => String, {
+    description: 'Description of the category',
+    nullable: true,
+  })
+  @IsString()
+  @MaxLength(500)
+  description?: string;
 }
