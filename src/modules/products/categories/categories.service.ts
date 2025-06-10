@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryInput } from './dto/create-category.input';
 import { UpdateCategoryInput } from './dto/update-category.input';
 import { InjectModel } from '@nestjs/mongoose';
@@ -32,6 +36,7 @@ export class CategoriesService {
   async findOneByName(name: string): Promise<CategoryDocument | null> {
     return this.categoryModel.findOne({ name }).exec();
   }
+
   async findAll(
     paginationCategoriesOptionsArgs: PaginationCategoriesOptionsArgs,
   ): Promise<PaginatedCategoriesOutput> {
@@ -40,15 +45,56 @@ export class CategoriesService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    const category = await this.categoryModel.findById(id).exec();
+
+    if (!category) {
+      throw new NotFoundException(`Category with id "${id}" not found.`);
+    }
+
+    return category;
   }
 
-  update(id: number, updateCategoryInput: UpdateCategoryInput) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryInput: UpdateCategoryInput) {
+    if (updateCategoryInput.name) {
+      const existingCategory = await this.findOneByName(
+        updateCategoryInput.name,
+      );
+
+      if (existingCategory && existingCategory.id !== id) {
+        throw new BadRequestException(
+          `Category with name "${updateCategoryInput.name}" already exists.`,
+        );
+      }
+    }
+
+    const updatedCategory = await this.categoryModel
+      .findByIdAndUpdate(id, updateCategoryInput, {
+        new: true,
+        runValidators: true,
+      })
+      .exec();
+
+    if (!updatedCategory) {
+      throw new NotFoundException(`Category with id "${id}" not found.`);
+    }
+
+    return updatedCategory;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    const deletedCategory = await this.findOne(id);
+
+    if (!deletedCategory) {
+      throw new NotFoundException(`Category with id "${id}" not found.`);
+    }
+
+    const result = await this.categoryModel.deleteOne({ _id: id }).exec();
+
+    if (result.deletedCount === 0) {
+      throw new NotFoundException(`Category with id "${id}" not found.`);
+    }
+
+    return deletedCategory;
   }
 }
