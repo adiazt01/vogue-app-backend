@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { envs } from './config/env.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ModulesModule } from './modules/modules.module';
@@ -19,7 +17,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
     ModulesModule,
     CommonModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
