@@ -1,6 +1,8 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 
-@ObjectType()
+@ObjectType({
+  description: 'Category entity represents a category in the product catalog',
+})
 export class Category {
   @Field(() => ID, { description: 'Unique identifier of the category' })
   _id: string;

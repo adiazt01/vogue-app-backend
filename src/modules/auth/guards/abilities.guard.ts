@@ -1,4 +1,5 @@
 import { AbilityFactory } from '@auth/factories/ability.factory';
+import { JwtPayload } from '@auth/interfaces/jwt-payload.interface';
 import {
   CanActivate,
   ExecutionContext,
@@ -7,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Request } from 'express';
 
 @Injectable()
 export class AbilitiesGuard implements CanActivate {
@@ -28,8 +30,11 @@ export class AbilitiesGuard implements CanActivate {
       );
     }
 
-    const gqlContext = GqlExecutionContext.create(context).getContext();
-    const user = gqlContext.req.user;
+    const gqlContext = GqlExecutionContext.create(context).getContext<{
+      req: Request;
+    }>();
+
+    const user = gqlContext.req.user as JwtPayload;
 
     const ability = await this.abilityFactory.defineAbilityForUser(user.sub);
 

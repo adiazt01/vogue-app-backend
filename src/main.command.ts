@@ -5,4 +5,10 @@ async function bootstrap() {
   await CommandFactory.run(AppModule, ['warn', 'error']);
 }
 
-bootstrap();
+bootstrap()
+  .then(() => {
+    console.log('Application started successfully');
+  })
+  .catch((error) => {
+    console.error('Failed to start application:', error);
+  });

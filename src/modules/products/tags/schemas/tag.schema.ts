@@ -12,11 +12,6 @@ export class Tag extends Document {
     unique: true,
   })
   name: string;
-
-  @Prop({
-    required: false,
-  })
-  description?: string;
 }
 
 export type TagDocument = HydratedDocument<Tag>;

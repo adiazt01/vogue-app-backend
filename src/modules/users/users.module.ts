@@ -4,7 +4,6 @@ import { UsersResolver } from './users.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
 import { HashService } from '@common/hash/hash.service';
-import { UserSeed } from './commands/seeds/user.seed';
 import { RolesModule } from './roles/roles.module';
 import {
   Permission,
@@ -30,7 +29,7 @@ import { Role, RoleSchema } from './roles/schemas/role.schema';
     ]),
     RolesModule,
   ],
-  providers: [UsersResolver, UsersService, HashService, UserSeed],
+  providers: [UsersResolver, UsersService, HashService],
   exports: [UsersService, HashService, MongooseModule],
 })
 export class UsersModule {}

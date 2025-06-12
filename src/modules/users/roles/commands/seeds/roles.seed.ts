@@ -76,10 +76,30 @@ export class RoleSeed extends CommandRunner {
       },
     ];
 
+    const permissionsForCategoriesResource = [
+      {
+        action: ACTIONS_PERMISSIONS.CREATE,
+        resource: RESOURCES.CATEGORIES,
+      },
+      {
+        action: ACTIONS_PERMISSIONS.READ,
+        resource: RESOURCES.CATEGORIES,
+      },
+      {
+        action: ACTIONS_PERMISSIONS.UPDATE,
+        resource: RESOURCES.CATEGORIES,
+      },
+      {
+        action: ACTIONS_PERMISSIONS.DELETE,
+        resource: RESOURCES.CATEGORIES,
+      },
+    ];
+
     const permissions = [
       ...permissionsForPermissionResource,
       ...permissionsForRoleResource,
       ...permissionsForUserResource,
+      ...permissionsForCategoriesResource,
     ];
 
     const createdAdminRoleInput = plainToInstance(CreateRoleInput, {

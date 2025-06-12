@@ -1,7 +1,9 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 
-@InputType()
+@InputType({
+  description: 'Input for creating a new tag',
+})
 export class CreateTagInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => String, { description: 'The name of the tag' })
+  name: string;
 }
