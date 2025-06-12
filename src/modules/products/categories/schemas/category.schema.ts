@@ -5,6 +5,8 @@ import { Document, HydratedDocument } from 'mongoose';
   timestamps: true,
 })
 export class Category extends Document {
+  declare _id: string;
+
   @Prop({
     required: true,
     unique: true,
