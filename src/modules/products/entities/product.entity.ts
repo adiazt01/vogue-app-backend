@@ -1,7 +1,33 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, ID, Float } from '@nestjs/graphql';
+import { Category } from '../categories/entities/category.entity';
+import { Tag } from '../tags/entities/tag.entity';
+import { User } from '@users/entities/user.entity';
 
-@ObjectType()
+@ObjectType({
+  description: 'Product entity',
+})
 export class Product {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => ID)
+  _id: string;
+
+  @Field(() => User)
+  owner: User;
+
+  @Field(() => String)
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  description?: string;
+
+  @Field(() => Int)
+  stock: number;
+
+  @Field(() => Float)
+  price: number;
+
+  @Field(() => Category)
+  category: Category;
+
+  @Field(() => [Tag])
+  tags: Tag[];
 }

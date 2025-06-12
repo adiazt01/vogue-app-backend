@@ -1,7 +1,6 @@
 import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
 import { RESOURCES } from '@users/enums/resources.enum';
 import { CreateRoleInput } from '@users/roles/dto/create-role.input';
-import { PermissionsService } from '@users/roles/permissions/permissions.service';
 import { RolesService } from '@users/roles/roles.service';
 import { plainToInstance } from 'class-transformer';
 import { Command, CommandRunner } from 'nest-commander';
@@ -11,10 +10,7 @@ import { Command, CommandRunner } from 'nest-commander';
   description: 'Seed the database with default roles',
 })
 export class RoleSeed extends CommandRunner {
-  constructor(
-    private readonly roleService: RolesService,
-    private readonly permissionService: PermissionsService,
-  ) {
+  constructor(private readonly roleService: RolesService) {
     super();
   }
 
