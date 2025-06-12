@@ -22,6 +22,12 @@ export class CreateRoleInput {
   @IsOptional()
   description?: string;
 
+  @Field(() => Boolean, {
+    description: 'Whether the role is the default role',
+    nullable: false,
+  })
+  isDefault: boolean;
+
   @Field(() => [String], {
     description: 'List of permissions associated with the role',
     nullable: true,

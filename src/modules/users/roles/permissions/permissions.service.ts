@@ -16,7 +16,22 @@ export class PermissionsService {
     return await createdPermission.save();
   }
 
-  async createMany(permissions: CreatePermissionInput[]) {
-    return await this.permissionModel.insertMany(permissions);
+  async createMany(
+    permissions: CreatePermissionInput[],
+  ): Promise<PermissionDocument[]> {
+    const results: PermissionDocument[] = [];
+
+    for (const perm of permissions) {
+      let found = await this.permissionModel.findOne({
+        action: perm.action,
+        resource: perm.resource,
+      });
+      if (!found) {
+        found = await this.permissionModel.create(perm);
+      }
+      results.push(found);
+    }
+
+    return results;
   }
 }

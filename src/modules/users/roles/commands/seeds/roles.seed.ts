@@ -15,7 +15,7 @@ export class RoleSeed extends CommandRunner {
   }
 
   async run() {
-    const permissionsForPermissionResource = [
+    const permissionsForAdminPermissionResource = [
       {
         action: ACTIONS_PERMISSIONS.CREATE,
         resource: RESOURCES.PERMISSIONS,
@@ -34,7 +34,7 @@ export class RoleSeed extends CommandRunner {
       },
     ];
 
-    const permissionsForRoleResource = [
+    const permissionsForAdminRoleResource = [
       {
         action: ACTIONS_PERMISSIONS.CREATE,
         resource: RESOURCES.ROLES,
@@ -53,7 +53,7 @@ export class RoleSeed extends CommandRunner {
       },
     ];
 
-    const permissionsForUserResource = [
+    const permissionsForAdminUserResource = [
       {
         action: ACTIONS_PERMISSIONS.CREATE,
         resource: RESOURCES.USERS,
@@ -72,7 +72,7 @@ export class RoleSeed extends CommandRunner {
       },
     ];
 
-    const permissionsForCategoriesResource = [
+    const permissionsForAdminCategoriesResource = [
       {
         action: ACTIONS_PERMISSIONS.CREATE,
         resource: RESOURCES.CATEGORIES,
@@ -91,20 +91,103 @@ export class RoleSeed extends CommandRunner {
       },
     ];
 
-    const permissions = [
-      ...permissionsForPermissionResource,
-      ...permissionsForRoleResource,
-      ...permissionsForUserResource,
-      ...permissionsForCategoriesResource,
+    const permissionsForAdminProducts = [
+      {
+        action: ACTIONS_PERMISSIONS.CREATE,
+        resource: RESOURCES.PRODUCTS,
+      },
+      {
+        action: ACTIONS_PERMISSIONS.READ,
+        resource: RESOURCES.PRODUCTS,
+      },
+      {
+        action: ACTIONS_PERMISSIONS.UPDATE,
+        resource: RESOURCES.PRODUCTS,
+      },
+      {
+        action: ACTIONS_PERMISSIONS.DELETE,
+        resource: RESOURCES.PRODUCTS,
+      },
+    ];
+
+    const permissionsAdmin = [
+      ...permissionsForAdminPermissionResource,
+      ...permissionsForAdminRoleResource,
+      ...permissionsForAdminUserResource,
+      ...permissionsForAdminCategoriesResource,
+      ...permissionsForAdminProducts,
+    ];
+
+    // USER FOR THE PLATFORM
+    const permissionsForUserRoleUserResource = [
+      {
+        action: ACTIONS_PERMISSIONS.READ,
+        resource: RESOURCES.USERS,
+      },
+    ];
+
+    const permissionsForUserRoleCategoriesResource = [
+      {
+        action: ACTIONS_PERMISSIONS.READ,
+        resource: RESOURCES.CATEGORIES,
+      },
+    ];
+
+    const permissionsForUserRoleProductsResource = [
+      {
+        action: ACTIONS_PERMISSIONS.READ,
+        resource: RESOURCES.PRODUCTS,
+      },
+    ];
+
+    const permissionsForUserRole = [
+      ...permissionsForUserRoleUserResource,
+      ...permissionsForUserRoleCategoriesResource,
+      ...permissionsForUserRoleProductsResource,
+    ];
+
+    // SELLER FOR THE PLATFORM
+    const permissionsForSeller = [
+      // Productos
+      { action: ACTIONS_PERMISSIONS.CREATE, resource: RESOURCES.PRODUCTS },
+      { action: ACTIONS_PERMISSIONS.READ, resource: RESOURCES.PRODUCTS },
+      { action: ACTIONS_PERMISSIONS.UPDATE, resource: RESOURCES.PRODUCTS },
+      { action: ACTIONS_PERMISSIONS.DELETE, resource: RESOURCES.PRODUCTS },
+
+      // Órdenes
+      { action: ACTIONS_PERMISSIONS.READ, resource: RESOURCES.ORDERS },
+      { action: ACTIONS_PERMISSIONS.UPDATE, resource: RESOURCES.ORDERS },
+
+      // Categorías
+      { action: ACTIONS_PERMISSIONS.READ, resource: RESOURCES.CATEGORIES },
+
+      // Perfil de usuario
+      { action: ACTIONS_PERMISSIONS.READ, resource: RESOURCES.USERS },
+      { action: ACTIONS_PERMISSIONS.UPDATE, resource: RESOURCES.USERS },
     ];
 
     const createdAdminRoleInput = plainToInstance(CreateRoleInput, {
       name: 'ADMIN',
       description: 'Administrator role with all permissions',
-      permissions,
+      permissions: permissionsAdmin,
+    });
+
+    const createdSellerRoleInput = plainToInstance(CreateRoleInput, {
+      name: 'SELLER',
+      description: 'Seller role with permissions to manage products and orders',
+      permissions: permissionsForSeller,
+    });
+
+    const createdUserRoleInput = plainToInstance(CreateRoleInput, {
+      name: 'USER',
+      description: 'User role with basic permissions',
+      isDefault: true,
+      permissions: permissionsForUserRole,
     });
 
     await this.roleService.create(createdAdminRoleInput);
+    await this.roleService.create(createdUserRoleInput);
+    await this.roleService.create(createdSellerRoleInput);
 
     console.log('Roles seeded successfully');
   }

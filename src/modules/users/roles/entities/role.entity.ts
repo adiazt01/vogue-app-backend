@@ -5,12 +5,27 @@ import { Permission } from '../permissions/entity/permission.entity';
   description: 'Role entity representing a specific role in the system',
 })
 export class Role {
-  @Field(() => ID)
+  @Field(() => ID, {
+    description: 'The unique identifier of the role',
+    nullable: false,
+  })
   id: string;
 
-  @Field()
+  @Field(() => String, {
+    description: 'The name of the role',
+    nullable: false,
+  })
   name: string;
 
-  @Field(() => [Permission])
+  @Field(() => Boolean, {
+    description: 'Whether the role is the default role',
+    nullable: false,
+  })
+  isDefault: boolean;
+
+  @Field(() => [Permission], {
+    description: 'The permissions associated with the role',
+    nullable: false,
+  })
   permissions: Permission[];
 }
