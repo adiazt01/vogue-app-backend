@@ -11,7 +11,7 @@ export class Product {
   _id: string;
 
   @Field(() => User)
-  owner: User;
+  ownerId: User;
 
   @Field(() => String)
   name: string;
@@ -26,7 +26,7 @@ export class Product {
   price: number;
 
   @Field(() => Category)
-  category: Category;
+  categoryId: Category;
 
   @Field(() => [Tag])
   tags: Tag[];

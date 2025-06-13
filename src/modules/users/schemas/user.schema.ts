@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument, Types } from 'mongoose';
+import { Document, HydratedDocument, PopulatedDoc, Types } from 'mongoose';
 import { Role } from '../roles/schemas/role.schema';
 
 @Schema({
@@ -17,14 +17,16 @@ export class User extends Document {
   @Prop({ required: true })
   username: string;
 
-  @Prop([Role])
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: Role.name }],
+  })
   roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
 export type UserDocumentOverride = {
-  roles: Types.DocumentArray<Role>;
+  roles: PopulatedDoc<Role>[];
 };
 
 export type UserDocument = HydratedDocument<User, UserDocumentOverride>;

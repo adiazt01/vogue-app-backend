@@ -7,6 +7,8 @@ import { AuthModule } from '@auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product } from './entities/product.entity';
 import { ProductSchema } from './schemas/product.schema';
+import { TagsService } from './tags/tags.service';
+import { CategoriesService } from './categories/categories.service';
 
 @Module({
   imports: [
@@ -20,6 +22,11 @@ import { ProductSchema } from './schemas/product.schema';
     CategoriesModule,
     AuthModule,
   ],
-  providers: [ProductsResolver, ProductsService],
+  providers: [
+    ProductsResolver,
+    ProductsService,
+    TagsService,
+    CategoriesService,
+  ],
 })
 export class ProductsModule {}

@@ -22,5 +22,3 @@ export class Category extends Document {
 export type CategoryDocument = HydratedDocument<Category>;
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
-
-CategorySchema.index({ name: 1 }, { unique: true });

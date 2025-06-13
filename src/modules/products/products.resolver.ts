@@ -1,11 +1,11 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { CurrentUser } from '@auth/decorators/current-user.decorator';
 import { JwtPayload } from '@auth/interfaces/jwt-payload.interface';
-import { UseGuards } from '@nestjs/common';
+import { NotImplementedException, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { AbilitiesGuard } from '@auth/guards/abilities.guard';
 import { CheckAbility } from '@auth/decorators/check-ability.decorator';
@@ -20,7 +20,9 @@ export class ProductsResolver {
 
   @UseGuards(JwtAuthGuard, AbilitiesGuard)
   @CheckAbility(ACTIONS_PERMISSIONS.CREATE, RESOURCES.PRODUCTS)
-  @Mutation(() => Product)
+  @Mutation(() => Product, {
+    description: 'Create a new product',
+  })
   createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
     @CurrentUser() user: JwtPayload,
@@ -29,14 +31,14 @@ export class ProductsResolver {
   }
 
   @Query(() => PaginatedProductsOutput, { name: 'products' })
-  findAll(
+  async findAll(
     @Args() paginationProductsOptionsArgs: PaginationProductsOptionsArgs,
   ) {
-    return this.productsService.findAll(paginationProductsOptionsArgs);
+    return await this.productsService.findAll(paginationProductsOptionsArgs);
   }
 
   @Query(() => Product, { name: 'product' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => String }) id: string) {
     return this.productsService.findOne(id);
   }
 
@@ -46,16 +48,13 @@ export class ProductsResolver {
   updateProduct(
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
   ) {
-    return this.productsService.update(
-      updateProductInput.id,
-      updateProductInput,
-    );
+    throw new NotImplementedException();
   }
 
   @UseGuards(JwtAuthGuard, AbilitiesGuard)
   @CheckAbility(ACTIONS_PERMISSIONS.DELETE, RESOURCES.PRODUCTS)
   @Mutation(() => Product)
-  removeProduct(@Args('id', { type: () => Int }) id: number) {
-    return this.productsService.remove(id);
+  removeProduct(@Args('id', { type: () => String }) id: string) {
+    throw new NotImplementedException();
   }
 }

@@ -23,8 +23,4 @@ export class PaginationOptionsDto {
   @Max(50)
   @IsOptional()
   take: number = 10;
-
-  get skip(): number {
-    return (this.page - 1) * this.take;
-  }
 }

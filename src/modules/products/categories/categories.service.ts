@@ -40,9 +40,19 @@ export class CategoriesService {
   async findAll(
     paginationCategoriesOptionsArgs: PaginationCategoriesOptionsArgs,
   ): Promise<PaginatedCategoriesOutput> {
-    return await paginate(this.categoryModel, paginationCategoriesOptionsArgs, {
-      name: paginationCategoriesOptionsArgs.name,
-    });
+    console.log(paginationCategoriesOptionsArgs);
+    const { name } = paginationCategoriesOptionsArgs;
+
+    return await paginate(
+      this.categoryModel,
+      {
+        page: paginationCategoriesOptionsArgs.page,
+        take: paginationCategoriesOptionsArgs.take,
+      },
+      {
+        name,
+      },
+    );
   }
 
   async findOne(id: string) {

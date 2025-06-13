@@ -10,6 +10,9 @@ export class Tag {
   @Field(() => String, { description: 'name of the tag' })
   name: string;
 
-  @Field(() => String, { description: 'description of the tag' })
-  description: string;
+  @Field(() => String, {
+    description: 'description of the tag',
+    nullable: true,
+  })
+  description?: string;
 }

@@ -22,6 +22,7 @@ export class AuthService {
 
   async register(registerInput: RegisterInput) {
     const registerUser = await this.usersService.create(registerInput);
+
     const defaultRole = await this.rolesService.findByDefault();
 
     if (!defaultRole) {

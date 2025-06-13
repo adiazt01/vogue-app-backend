@@ -4,10 +4,13 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  IsUUID,
   Min,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
+import { CreateTagInput } from '../tags/dto/create-tag.input';
+import { Type } from 'class-transformer';
+import { ParseObjectIdPipe } from '@nestjs/mongoose';
 
 @InputType({
   description: 'Input for creating a new product',
@@ -38,13 +41,18 @@ export class CreateProductInput {
   @Min(0)
   stock?: number;
 
-  @Field(() => [ID], { description: 'Product tags', nullable: true })
+  @Field(() => [CreateTagInput], {
+    description: 'Product tags',
+    nullable: true,
+  })
   @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateTagInput)
   @IsArray()
-  @IsUUID('all', { each: true })
-  tagsId?: string[];
+  tags?: CreateTagInput[];
 
   @Field(() => ID, { description: 'Product category' })
-  @IsUUID()
+  @IsString()
+  @Type(() => ParseObjectIdPipe)
   categoryId: string;
 }

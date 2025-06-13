@@ -8,15 +8,7 @@ export class PaginationCategoriesOptionsArgs extends PaginationOptionsDto {
     nullable: true,
     description: 'Filter categories by name',
   })
-  @IsOptional()
   @IsString()
-  name?: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'Filter categories by slug',
-  })
   @IsOptional()
-  @IsString()
-  slug?: string;
+  name: string;
 }

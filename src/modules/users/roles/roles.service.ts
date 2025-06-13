@@ -2,14 +2,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Role } from './schemas/role.schema';
-import { PaginationOptionsDto } from '@common/dtos/pagination/pagination-options.dto';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { CreateRoleInput } from './dto/create-role.input';
 import { PermissionsService } from './permissions/permissions.service';
-import {
-  Permission,
-  PermissionDocument,
-} from './permissions/schemas/permission.schema';
+import { PermissionDocument } from './permissions/schemas/permission.schema';
+import { PaginationRolesOptionsArgs } from './dto/pagination-roles-options.args';
 
 @Injectable()
 export class RolesService {
@@ -46,15 +43,14 @@ export class RolesService {
     return await createdRole.save();
   }
 
-  async findAll(paginationOptions: PaginationOptionsDto) {
+  async findAll(paginationRolesOptionsArgs: PaginationRolesOptionsArgs) {
     return await paginate(
       this.roleModel,
-      paginationOptions,
-      {},
+      paginationRolesOptionsArgs,
       {
-        path: 'permissions',
-        model: Permission.name,
+        name: paginationRolesOptionsArgs.name,
       },
+      ['permissions'],
     );
   }
 

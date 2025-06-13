@@ -16,5 +16,6 @@ import { Tag, TagSchema } from './schemas/tag.schema';
     ]),
   ],
   providers: [TagsResolver, TagsService],
+  exports: [TagsService, MongooseModule],
 })
 export class TagsModule {}

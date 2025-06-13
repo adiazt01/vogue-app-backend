@@ -16,5 +16,6 @@ import { AuthModule } from '@auth/auth.module';
     ]),
   ],
   providers: [CategoriesResolver, CategoriesService],
+  exports: [CategoriesService, MongooseModule],
 })
 export class CategoriesModule {}

@@ -10,6 +10,7 @@ import {
   PermissionSchema,
 } from './roles/permissions/schemas/permission.schema';
 import { Role, RoleSchema } from './roles/schemas/role.schema';
+import { UserSeed } from './commands/seeds/users.seed';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { Role, RoleSchema } from './roles/schemas/role.schema';
     ]),
     RolesModule,
   ],
-  providers: [UsersResolver, UsersService, HashService],
+  providers: [UsersResolver, UsersService, HashService, UserSeed],
   exports: [UsersService, HashService, MongooseModule],
 })
 export class UsersModule {}

@@ -33,6 +33,25 @@ export class TagsService {
     return tag;
   }
 
+  async createOrFindTags(createTagInput: CreateTagInput[]) {
+    const names = createTagInput.map((tag) => tag.name);
+
+    const existingTags = await this.tagModel.find({ name: { $in: names } });
+    const existingNames = existingTags.map((tag) => tag.name);
+
+    const tagsToCreate = createTagInput.filter(
+      (tag) => !existingNames.includes(tag.name),
+    );
+
+    let createdTags: Tag[] = [];
+
+    if (tagsToCreate.length > 0) {
+      createdTags = await this.tagModel.insertMany(tagsToCreate);
+    }
+
+    return [...existingTags, ...createdTags];
+  }
+
   async findOneByName(name: string): Promise<Tag | null> {
     const tagFounded = await this.tagModel.findOne({ name });
 
@@ -40,13 +59,12 @@ export class TagsService {
   }
 
   async findAll(paginationTagsOptionsArgs: PaginationTagsOptionsArgs) {
-    const { name, page, skip, take } = paginationTagsOptionsArgs;
+    const { name, page, take } = paginationTagsOptionsArgs;
 
     return await paginate(
       this.tagModel,
       {
         page: page,
-        skip: skip,
         take: take,
       },
       {

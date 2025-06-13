@@ -1,16 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
-import { HashService } from '@common/hash/hash.service';
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
 import { PaginationOptionsDto } from '@common/dtos/pagination/pagination-options.dto';
-import { PaginatedUsersOutput } from './dto/paginated-users.output';
+import { HashService } from '@common/hash/hash.service';
 import { paginate } from '@common/utils/pagination/paginate.util';
-import { Role } from './roles/schemas/role.schema';
-import { Permission } from './roles/permissions/schemas/permission.schema';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { AssignRoleUserInput } from './dto/assign-role-user.input';
+import { CreateUserInput } from './dto/create-user.input';
+import { PaginatedUsersOutput } from './dto/paginated-users.output';
+import { UpdateUserInput } from './dto/update-user.input';
+import { Permission } from './roles/permissions/schemas/permission.schema';
+import { Role } from './roles/schemas/role.schema';
+import { User } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
