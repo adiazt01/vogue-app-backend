@@ -17,14 +17,14 @@ export class User extends Document {
   @Prop({ required: true })
   username: string;
 
-  @Prop({
-    type: [Types.ObjectId],
-    ref: Role.name,
-    autopopulate: true,
-  })
+  @Prop([Role])
   roles: Role[];
 }
 
-export type UserDocument = HydratedDocument<User>;
-
 export const UserSchema = SchemaFactory.createForClass(User);
+
+export type UserDocumentOverride = {
+  roles: Types.DocumentArray<Role>;
+};
+
+export type UserDocument = HydratedDocument<User, UserDocumentOverride>;

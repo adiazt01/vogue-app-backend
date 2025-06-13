@@ -9,10 +9,13 @@ import { UsersService } from '@users/users.service';
 import { AbilityFactory } from './factories/ability.factory';
 import { AbilitiesGuard } from './guards/abilities.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesModule } from '@users/roles/roles.module';
+import { RolesService } from '@users/roles/roles.service';
 
 @Module({
   imports: [
     UsersModule,
+    RolesModule,
     JwtModule.register({
       secret: envs.JWT_SECRET,
       signOptions: {
@@ -23,6 +26,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
   providers: [
     AuthResolver,
     AuthService,
+    RolesService,
     UsersService,
     JwtStrategy,
     AbilityFactory,

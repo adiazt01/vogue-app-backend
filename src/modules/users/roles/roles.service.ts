@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Role } from './schemas/role.schema';
@@ -20,7 +20,15 @@ export class RolesService {
   ) {}
 
   async create(role: CreateRoleInput): Promise<Role> {
-    const { name, description, permissions } = role;
+    const { name, description, permissions, isDefault } = role;
+
+    if (isDefault) {
+      const isDefaultRoleSetter = await this.findByDefault();
+
+      if (isDefaultRoleSetter) {
+        throw new BadRequestException('Only one default role can exist');
+      }
+    }
 
     let createdPermissions: PermissionDocument[] | undefined;
 
@@ -32,6 +40,7 @@ export class RolesService {
       name,
       description,
       permissions: createdPermissions?.map((permission) => permission._id),
+      isDefault,
     });
 
     return await createdRole.save();
@@ -51,6 +60,10 @@ export class RolesService {
 
   async findOne(id: string): Promise<Role | null> {
     return await this.roleModel.findById(id).populate('permissions').exec();
+  }
+
+  async findByDefault() {
+    return await this.roleModel.findOne({ isDefault: true }).exec();
   }
 
   async update(id: string, role: Partial<Role>): Promise<Role | null> {

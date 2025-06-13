@@ -10,6 +10,7 @@ import { PaginatedUsersOutput } from './dto/paginated-users.output';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { Role } from './roles/schemas/role.schema';
 import { Permission } from './roles/permissions/schemas/permission.schema';
+import { AssignRoleUserInput } from './dto/assign-role-user.input';
 
 @Injectable()
 export class UsersService {
@@ -59,6 +60,7 @@ export class UsersService {
 
     return userFound;
   }
+
   async findOneByEmail(email: string) {
     const userFound = await this.userModel.findOne({ email });
 
@@ -75,6 +77,36 @@ export class UsersService {
     );
 
     if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
+
+    return userFound;
+  }
+
+  async assignRoleToUser(assignRoleUserInput: AssignRoleUserInput) {
+    const { roleId, userId } = assignRoleUserInput;
+
+    const userFound = await this.userModel.findById(userId);
+
+    if (!userFound)
+      throw new NotFoundException(
+        `User with ID ${userId.toString()} not found`,
+      );
+
+    const roleFound = await this.roleModel.findById(roleId);
+
+    if (!roleFound)
+      throw new NotFoundException(
+        `Role with ID ${roleId.toString()} not found`,
+      );
+
+    if (!Array.isArray(userFound.roles)) {
+      userFound.roles = [];
+    }
+
+    userFound.roles.push({
+      _id: roleFound._id,
+    } as Role);
+
+    await userFound.save();
 
     return userFound;
   }

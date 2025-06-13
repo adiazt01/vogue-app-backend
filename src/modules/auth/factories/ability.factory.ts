@@ -18,8 +18,8 @@ export class AbilityFactory {
   async defineAbilityForUser(userId: string): Promise<MongoAbility> {
     const userWithRoles = await this.usersService.findOne(userId);
 
-    if (!userWithRoles) {
-      throw new NotFoundException(`User with id ${userId} not found`);
+    if (!userWithRoles || !userWithRoles.roles || !userWithRoles.roles.length) {
+      throw new NotFoundException(`User dont have any roles`);
     }
 
     const { can, build } = new AbilityBuilder<MongoAbility>(createMongoAbility);

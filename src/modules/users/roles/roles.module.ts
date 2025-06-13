@@ -9,6 +9,7 @@ import {
   PermissionSchema,
 } from './permissions/schemas/permission.schema';
 import { RoleSeed } from './commands/seeds/roles.seed';
+import { PermissionsService } from './permissions/permissions.service';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RoleSeed } from './commands/seeds/roles.seed';
       },
     ]),
   ],
-  providers: [RolesResolver, RolesService, RoleSeed],
+  providers: [RolesResolver, PermissionsService, RolesService, RoleSeed],
+  exports: [RolesService, PermissionsService],
 })
 export class RolesModule {}

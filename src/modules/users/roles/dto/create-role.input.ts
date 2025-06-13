@@ -25,6 +25,7 @@ export class CreateRoleInput {
   @Field(() => Boolean, {
     description: 'Whether the role is the default role',
     nullable: false,
+    defaultValue: false,
   })
   isDefault: boolean;
 

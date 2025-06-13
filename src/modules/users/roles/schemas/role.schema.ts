@@ -4,6 +4,8 @@ import { Document, HydratedDocument, Types } from 'mongoose';
 
 @Schema()
 export class Role extends Document {
+  declare _id: Types.ObjectId;
+
   @Prop({ required: true, unique: true })
   name: string;
 
@@ -13,17 +15,17 @@ export class Role extends Document {
   @Prop({ required: false, default: false })
   isDefault: boolean;
 
-  @Prop({
-    type: [Types.ObjectId],
-    ref: Permission.name,
-    autopopulate: true,
-  })
+  @Prop([Permission])
   permissions: Permission[];
 }
 
-export type RoleDocument = HydratedDocument<Role>;
-
 export const RoleSchema = SchemaFactory.createForClass(Role);
+
+export type RoleDocumentOverride = {
+  permissions: Types.ArraySubdocument<Permission>;
+};
+
+export type RoleDocument = HydratedDocument<Role, RoleDocumentOverride>;
 
 RoleSchema.post('findOneAndDelete', async function (doc: RoleDocument) {
   if (doc) {
