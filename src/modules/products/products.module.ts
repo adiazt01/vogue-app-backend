@@ -9,6 +9,7 @@ import { Product } from './entities/product.entity';
 import { ProductSchema } from './schemas/product.schema';
 import { TagsService } from './tags/tags.service';
 import { CategoriesService } from './categories/categories.service';
+import { LoggerService } from '@common/logger/logger.service';
 
 @Module({
   imports: [
@@ -27,6 +28,8 @@ import { CategoriesService } from './categories/categories.service';
     ProductsService,
     TagsService,
     CategoriesService,
+    LoggerService,
   ],
+  exports: [ProductsService, MongooseModule, TagsService, CategoriesService, LoggerService],
 })
 export class ProductsModule {}

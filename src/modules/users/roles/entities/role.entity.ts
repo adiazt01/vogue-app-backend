@@ -9,7 +9,7 @@ export class Role {
     description: 'The unique identifier of the role',
     nullable: false,
   })
-  id: string;
+  _id: string;
 
   @Field(() => String, {
     description: 'The name of the role',

@@ -1,6 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Role } from './schemas/role.schema';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { CreateRoleInput } from './dto/create-role.input';
@@ -50,12 +54,21 @@ export class RolesService {
       {
         name: paginationRolesOptionsArgs.name,
       },
-      ['permissions'],
+      [
+        {
+          path: 'permissions',
+        },
+      ],
     );
   }
 
-  async findOne(id: string): Promise<Role | null> {
-    return await this.roleModel.findById(id).populate('permissions').exec();
+  async findOne(id: Types.ObjectId | string) {
+    const roleFound = await this.roleModel.findById(id).lean().exec();
+
+    if (!roleFound)
+      throw new NotFoundException(`Role with ID ${id.toString()} not found`);
+
+    return roleFound;
   }
 
   async findByDefault() {
@@ -70,5 +83,18 @@ export class RolesService {
       })
       .populate('permissions')
       .exec();
+  }
+
+  async getRolePermissions(roleId: string) {
+    const role = await this.roleModel
+      .findById(roleId)
+      .populate('permissions')
+      .exec();
+
+    if (!role) {
+      throw new BadRequestException(`Role with ID ${roleId} not found`);
+    }
+
+    return role.permissions;
   }
 }

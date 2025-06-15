@@ -13,7 +13,7 @@ export class Product extends Document {
     ref: User.name,
     required: true,
   })
-  ownerId: Types.ObjectId | User;
+  owner: Types.ObjectId | User;
 
   @Prop({ required: true, unique: true })
   name: string;
@@ -35,7 +35,7 @@ export class Product extends Document {
     ref: Category.name,
     required: true,
   })
-  categoryId: Types.ObjectId | Category;
+  category: Types.ObjectId | Category;
 
   @Prop({
     type: [{ type: Types.ObjectId, ref: Tag.name }],

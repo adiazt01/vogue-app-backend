@@ -22,6 +22,10 @@
       "@config/*": ["./src/config/*"],
       "@auth/*": ["./src/modules/auth/*"],
       "@users/*": ["./src/modules/users/*"],
+      "@products/*": ["./src/modules/products/*"],
+      "@orders/*": ["./src/modules/orders/*"],
+      "@payments/*": ["./src/modules/payments/*"],
+      "@notifications/*": ["./src/modules/notifications/*"],
     }
   }
 }

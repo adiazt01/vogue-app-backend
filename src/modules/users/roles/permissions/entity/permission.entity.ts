@@ -6,7 +6,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 })
 export class Permission {
   @Field(() => ID)
-  id: string;
+  _id: string;
 
   @Field(() => String)
   action: string;

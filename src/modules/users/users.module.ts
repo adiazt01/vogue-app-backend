@@ -11,6 +11,8 @@ import {
 } from './roles/permissions/schemas/permission.schema';
 import { Role, RoleSchema } from './roles/schemas/role.schema';
 import { UserSeed } from './commands/seeds/users.seed';
+import { LoggerService } from '@common/logger/logger.service';
+import { RolesService } from './roles/roles.service';
 
 @Module({
   imports: [
@@ -30,7 +32,14 @@ import { UserSeed } from './commands/seeds/users.seed';
     ]),
     RolesModule,
   ],
-  providers: [UsersResolver, UsersService, HashService, UserSeed],
-  exports: [UsersService, HashService, MongooseModule],
+  providers: [
+    UsersService,
+    LoggerService,
+    UsersResolver,
+    HashService,
+    RolesService,
+    UserSeed,
+  ],
+  exports: [UsersService, HashService, MongooseModule, LoggerService],
 })
 export class UsersModule {}

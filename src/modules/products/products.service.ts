@@ -13,6 +13,7 @@ import { Product } from './entities/product.entity';
 import { TagsService } from './tags/tags.service';
 import { PaginationProductsOptionsArgs } from './dto/pagination-products-options.args';
 import { paginate } from '@common/utils/pagination/paginate.util';
+import { LoggerService } from '@common/logger/logger.service';
 
 @Injectable()
 export class ProductsService {
@@ -21,6 +22,7 @@ export class ProductsService {
     private readonly productModel: Model<Product>,
     private readonly categoriesService: CategoriesService,
     private readonly tagsService: TagsService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async create(createProductInput: CreateProductInput, userId: string) {
@@ -31,8 +33,6 @@ export class ProductsService {
 
     if (isProductNameTaken)
       throw new BadRequestException(`Product name ${name} already exists`);
-
-    if (!categoryId) throw new BadRequestException(`Category id is required`);
 
     const categoryFound = await this.categoriesService.findOne(categoryId);
 
@@ -45,18 +45,20 @@ export class ProductsService {
       await this.tagsService.createOrFindTags(tags);
 
     const createdProduct = await this.productModel.create({
-      ownerId: userId,
+      owner: userId,
       name,
       price,
       description,
-      categoryId: categoryFound._id,
+      category: categoryFound._id,
       stock,
       tags: tagsValidatesAndCreated.map((tag) => tag._id),
     });
 
+    this.loggerService.info(`New product created: ${createdProduct._id}`);
+
     const newProductFounded = await this.productModel
       .findById(createdProduct._id)
-      .populate(['ownerId', 'categoryId', 'tags']);
+      .populate(['owner', 'category', 'tags']);
 
     return newProductFounded;
   }
@@ -79,8 +81,53 @@ export class ProductsService {
       {
         name: paginationProductsOptionsArgs.name,
       },
-      ['ownerId', 'categoryId', 'tags'],
+      [
+        {
+          path: 'owner',
+        },
+        {
+          path: 'category',
+        },
+        {
+          path: 'tags',
+        },
+      ],
     );
+  }
+
+  async validateProductsAndStock(
+    products: { productId: string; quantity: number }[],
+  ) {
+    const productsIds = products.map((p) => p.productId);
+
+    const productsFound = await this.productModel
+      .find({ _id: { $in: productsIds } })
+      .select('*')
+      .populate(['owner', 'category'])
+      .lean();
+
+    if (productsFound.length !== productsIds.length) {
+      throw new NotFoundException(
+        `Some product ids are not valid: ${productsIds.join(', ')}`,
+      );
+    }
+
+    const insufficientStock = productsFound.filter((product) => {
+      const productInOrder = products.find(
+        (p) => p.productId.toString() === product._id.toString(),
+      );
+      return productInOrder && product.stock < productInOrder.quantity;
+    });
+
+    if (insufficientStock.length > 0) {
+      throw new BadRequestException(
+        `Insufficient stock for products: ${insufficientStock
+          .map((p) => p._id)
+          .join(', ')}`,
+      );
+    }
+
+    return productsFound;
   }
 
   async isProductNameTaken(userId: string, name: string) {
@@ -90,9 +137,7 @@ export class ProductsService {
     });
   }
 
-  async update(userId: string, updateProductInput: UpdateProductInput) {
-    throw new NotImplementedException();
-  }
+  async update(userId: string, updateProductInput: UpdateProductInput) {}
 
   remove(id: number) {
     throw new NotImplementedException();

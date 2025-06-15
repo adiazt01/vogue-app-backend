@@ -6,11 +6,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AssignRoleUserInput } from './dto/assign-role-user.input';
 import { CreateUserInput } from './dto/create-user.input';
-import { PaginatedUsersOutput } from './dto/paginated-users.output';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Permission } from './roles/permissions/schemas/permission.schema';
 import { Role } from './roles/schemas/role.schema';
 import { User } from './schemas/user.schema';
+import { LoggerService } from '@common/logger/logger.service';
+import { RolesService } from './roles/roles.service';
 
 @Injectable()
 export class UsersService {
@@ -18,10 +19,9 @@ export class UsersService {
     private readonly hashService: HashService,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-    @InjectModel(Role.name)
-    private readonly roleModel: Model<Role>,
     @InjectModel(Permission.name)
-    private readonly permissionModel: Model<Permission>,
+    private readonly rolesService: RolesService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async create(createUserInput: CreateUserInput) {
@@ -37,24 +37,19 @@ export class UsersService {
     return newUser.save();
   }
 
-  async findAll(
-    paginationOptions: PaginationOptionsDto,
-  ): Promise<PaginatedUsersOutput> {
-    return await paginate(this.userModel, paginationOptions);
+  async findAll(paginationOptions: PaginationOptionsDto) {
+    return await paginate(
+      this.userModel,
+      {
+        page: paginationOptions.page,
+        take: paginationOptions.take,
+      },
+      {},
+    );
   }
 
   async findOne(id: string) {
-    const userFound = await this.userModel
-      .findById(id)
-      .populate({
-        path: this.roleModel.collection.name,
-        model: this.roleModel,
-        populate: {
-          path: this.permissionModel.collection.name,
-          model: this.permissionModel,
-        },
-      })
-      .exec();
+    const userFound = await this.userModel.findById(id).exec();
 
     if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
 
@@ -91,7 +86,7 @@ export class UsersService {
         `User with ID ${userId.toString()} not found`,
       );
 
-    const roleFound = await this.roleModel.findById(roleId);
+    const roleFound = await this.rolesService.findOne(roleId);
 
     if (!roleFound)
       throw new NotFoundException(
@@ -109,6 +104,20 @@ export class UsersService {
     await userFound.save();
 
     return userFound;
+  }
+
+  async getUserRoles(userId: string) {
+    const userFound = await this.userModel
+      .findById(userId)
+      .populate({
+        path: 'roles',
+      })
+      .exec();
+
+    if (!userFound)
+      throw new NotFoundException(`User with ID ${userId} not found`);
+
+    return userFound.roles;
   }
 
   async remove(id: string) {
