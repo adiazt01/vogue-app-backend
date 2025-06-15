@@ -47,6 +47,10 @@ export class OrdersService {
 
     session.startTransaction();
 
+    this.loggerService.debug(
+      `Creating order with products: ${JSON.stringify(productsValidates)}`,
+    );
+
     const order = new this.orderModel({
       products: productsValidates.map((product) => ({
         product: product._id,

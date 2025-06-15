@@ -95,7 +95,15 @@ export class ProductsService {
 
     const productsFound = await this.productModel
       .find({ _id: { $in: productsIds } })
-      .select('*')
+      .populate({
+        path: 'owner',
+      })
+      .populate({
+        path: 'category',
+      })
+      .populate({
+        path: 'tags',
+      })
       .lean();
 
     if (productsFound.length !== productsIds.length) {
@@ -118,6 +126,10 @@ export class ProductsService {
           .join(', ')}`,
       );
     }
+
+    this.loggerService.debug(
+      `Products found: ${JSON.stringify(productsFound, null, 2)}`,
+    );
 
     return productsFound;
   }

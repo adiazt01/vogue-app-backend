@@ -2,6 +2,7 @@ import {
   Args,
   Mutation,
   Parent,
+  Query,
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
@@ -16,6 +17,8 @@ import { CheckAbility } from '@auth/decorators/check-ability.decorator';
 import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
 import { RESOURCES } from '@users/enums/resources.enum';
 import { UpdatePermissionFromRoleInput } from './dto/update-permission-from-role.input';
+import { PaginatedRolesOutput } from './dto/paginated-roles.output';
+import { PaginationRolesOptionsArgs } from './permissions/dto/pagination-permissions-options.args';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -26,8 +29,20 @@ export class RolesResolver {
   @Mutation(() => Role, {
     description: 'Create a new role with optional permissions',
   })
-  async createRole(@Args('createRoleInput') createRoleInput: CreateRoleInput) {
+  async create(@Args('createRoleInput') createRoleInput: CreateRoleInput) {
     return this.rolesService.create(createRoleInput);
+  }
+
+  @UseGuards(JwtAuthGuard, AbilitiesGuard)
+  @CheckAbility(ACTIONS_PERMISSIONS.READ, RESOURCES.ROLES)
+  @Query(() => PaginatedRolesOutput, {
+    name: 'roles',
+    description: 'Get all roles with their permissions',
+  })
+  async findAll(
+    @Args() paginationRolesOptionsArgs: PaginationRolesOptionsArgs,
+  ) {
+    return this.rolesService.findAll(paginationRolesOptionsArgs);
   }
 
   @UseGuards(JwtAuthGuard, AbilitiesGuard)
