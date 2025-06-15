@@ -6,7 +6,7 @@ import { User } from '@users/schemas/user.schema';
 
 @Schema({ timestamps: true })
 export class Product extends Document {
-  declare _id: string;
+  declare _id: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,

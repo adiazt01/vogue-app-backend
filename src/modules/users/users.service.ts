@@ -7,20 +7,18 @@ import { Model } from 'mongoose';
 import { AssignRoleUserInput } from './dto/assign-role-user.input';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { Permission } from './roles/permissions/schemas/permission.schema';
 import { Role } from './roles/schemas/role.schema';
-import { User } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 import { LoggerService } from '@common/logger/logger.service';
 import { RolesService } from './roles/roles.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly hashService: HashService,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-    @InjectModel(Permission.name)
     private readonly rolesService: RolesService,
+    private readonly hashService: HashService,
     private readonly loggerService: LoggerService,
   ) {}
 
@@ -48,8 +46,16 @@ export class UsersService {
     );
   }
 
-  async findOne(id: string) {
-    const userFound = await this.userModel.findById(id).exec();
+  async findOne(id: string): Promise<User> {
+    const userFound = await this.userModel
+      .findById(id)
+      .populate({
+        path: 'roles',
+        populate: {
+          path: 'permissions',
+        },
+      })
+      .lean();
 
     if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
 
@@ -62,6 +68,7 @@ export class UsersService {
     return userFound;
   }
 
+  // TODO Este metodo se deberia desacoplar y dividirlo entre metodos tales como, actualizar email, actualizar password, etc. Para tener una mejor auditoria
   async update(id: string, updateUserInput: UpdateUserInput) {
     const userFound = await this.userModel.findByIdAndUpdate(
       id,

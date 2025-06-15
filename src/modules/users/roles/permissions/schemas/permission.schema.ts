@@ -1,10 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import { Document, HydratedDocument, Types } from 'mongoose';
 import { ACTIONS_PERMISSIONS } from '../../../enums/actions-permissions.enum';
 import { RESOURCES } from '@users/enums/resources.enum';
 
 @Schema()
 export class Permission extends Document {
+  declare _id: Types.ObjectId;
+
   @Prop({
     required: true,
     enum: ACTIONS_PERMISSIONS,

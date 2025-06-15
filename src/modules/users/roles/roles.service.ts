@@ -9,8 +9,13 @@ import { Role } from './schemas/role.schema';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { CreateRoleInput } from './dto/create-role.input';
 import { PermissionsService } from './permissions/permissions.service';
-import { PermissionDocument } from './permissions/schemas/permission.schema';
+import {
+  Permission,
+  PermissionDocument,
+} from './permissions/schemas/permission.schema';
 import { PaginationRolesOptionsArgs } from './dto/pagination-roles-options.args';
+import { UpdatePermissionFromRoleInput } from './dto/update-permission-from-role.input';
+import { LoggerService } from '@common/logger/logger.service';
 
 @Injectable()
 export class RolesService {
@@ -18,6 +23,7 @@ export class RolesService {
     @InjectModel(Role.name)
     private readonly roleModel: Model<Role>,
     private readonly permissionService: PermissionsService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async create(role: CreateRoleInput): Promise<Role> {
@@ -73,6 +79,54 @@ export class RolesService {
 
   async findByDefault() {
     return await this.roleModel.findOne({ isDefault: true }).exec();
+  }
+
+  async removePermissionFromRole(
+    updatePermissionFromRoleInput: UpdatePermissionFromRoleInput,
+  ) {
+    const { roleId, permissionIds } = updatePermissionFromRoleInput;
+
+    await this.roleModel.findByIdAndUpdate(roleId, {
+      $pull: {
+        permissions: {
+          $in: permissionIds,
+        },
+      },
+    });
+  }
+
+  async addPermissionToRole(
+    updatePermissionFromRoleInput: UpdatePermissionFromRoleInput,
+  ) {
+    const { roleId, permissionIds } = updatePermissionFromRoleInput;
+
+    const roleFounded = await this.roleModel.findById(roleId);
+
+    if (!roleFounded) {
+      throw new NotFoundException(
+        `Role with ID ${roleId.toString()} not found`,
+      );
+    }
+
+    const permissions = await this.permissionService.validatePermissions({
+      permissionIds,
+    });
+
+    const permissionIdsToAdd = permissions.map((p) => p._id);
+
+    roleFounded.permissions.push(
+      ...permissionIdsToAdd.map((id) => id as Types.ObjectId & Permission),
+    );
+
+    roleFounded.markModified('permissions');
+
+    this.loggerService.log(
+      `Adding permissions to role with ID ${roleId.toString()}: ${permissions
+        .map((p) => p.action)
+        .join(', ')}`,
+    );
+
+    return await roleFounded.save();
   }
 
   async update(id: string, role: Partial<Role>): Promise<Role | null> {

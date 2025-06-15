@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateOrderInput } from './dto/create-order.input';
 import { UpdateOrderInput } from './dto/update-order.input';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Order, OrderDocument } from './schemas/order.schema';
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { ProductsService } from '@products/products.service';
 import { LoggerService } from '@common/logger/logger.service';
 import { StatusOrder } from './enums/status-order.enum';
@@ -12,6 +12,8 @@ import { StatusOrder } from './enums/status-order.enum';
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectConnection()
+    private readonly connection: Connection,
     private readonly productsService: ProductsService,
     private readonly loggerService: LoggerService,
   ) {}
@@ -20,14 +22,20 @@ export class OrdersService {
     const { products } = createOrderInput;
 
     const productsValidates =
-      await this.productsService.validateProductsAndStock(products);
+      await this.productsService.validateProductsAndStock({
+        products: products.map((p) => ({
+          productId: p.productId,
+          quantity: p.quantity,
+        })),
+      });
 
     const totalPrice = productsValidates.reduce(
       (total, product) =>
         total +
         product.price *
-          (products.find((p) => p.productId === product._id.toString())
-            ?.quantity || 0),
+          (products.find(
+            (p) => p.productId.toString() === product._id.toString(),
+          )?.quantity || 0),
       0,
     );
 
@@ -35,11 +43,16 @@ export class OrdersService {
       throw new BadRequestException(`Invalid products`);
     }
 
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+
     const order = new this.orderModel({
       products: productsValidates.map((product) => ({
         product: product._id,
-        quantity: products.find((p) => p.productId === product._id.toString())
-          ?.quantity,
+        quantity: products.find(
+          (p) => p.productId.toString() === product._id.toString(),
+        )?.quantity,
         price: product.price,
         seller: product.owner._id,
       })),
@@ -49,6 +62,19 @@ export class OrdersService {
     });
 
     await order.save();
+
+    for (const product of products) {
+      await this.productsService.reduceStock(
+        {
+          productId: product.productId,
+          quantity: product.quantity,
+        },
+        session,
+      );
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
 
     this.loggerService.log(`New order created: ${order._id}`);
 

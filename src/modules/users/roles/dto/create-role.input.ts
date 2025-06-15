@@ -40,5 +40,5 @@ export class CreateRoleInput {
   @IsOptional()
   @IsArray()
   @Type(() => CreatePermissionInput)
-  permissions: CreatePermissionInput[];
+  permissions?: CreatePermissionInput[];
 }

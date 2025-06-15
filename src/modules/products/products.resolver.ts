@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
@@ -13,6 +20,9 @@ import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
 import { RESOURCES } from '@users/enums/resources.enum';
 import { PaginatedProductsOutput } from './dto/paginated-products.output';
 import { PaginationProductsOptionsArgs } from './dto/pagination-products-options.args';
+import { Category } from './categories/entities/category.entity';
+import { Tag } from './tags/entities/tag.entity';
+import { User } from '@users/entities/user.entity';
 
 @Resolver(() => Product)
 export class ProductsResolver {
@@ -56,5 +66,30 @@ export class ProductsResolver {
   @Mutation(() => Product)
   removeProduct(@Args('id', { type: () => String }) id: string) {
     throw new NotImplementedException();
+  }
+
+  // ResolveFields to fetch related entities
+  @ResolveField(() => User, {
+    description: 'Get the owner of the product',
+  })
+  async owner(@Parent() product: Product) {
+    console.log('Resolving owner for product:', product);
+    return this.productsService.findProductOwner(product.owner._id);
+  }
+
+  @ResolveField(() => Category, {
+    description: 'Get the category of the product',
+  })
+  async category(@Parent() product: Product) {
+    return this.productsService.findProductCategory(product.category._id);
+  }
+
+  @ResolveField(() => [Tag], {
+    description: 'Get the tags of the product',
+  })
+  async tags(@Parent() product: Product) {
+    return this.productsService.findProductTags(
+      product.tags.map((tag) => tag._id),
+    );
   }
 }

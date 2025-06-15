@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument, PopulatedDoc, Types } from 'mongoose';
-import { Role } from '../roles/schemas/role.schema';
+import { Role, RoleDocument } from '../roles/schemas/role.schema';
 
 @Schema({
   timestamps: true,
@@ -26,7 +26,7 @@ export class User extends Document {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 export type UserDocumentOverride = {
-  roles: PopulatedDoc<Role>[];
+  roles: PopulatedDoc<RoleDocument>[];
 };
 
 export type UserDocument = HydratedDocument<User, UserDocumentOverride>;

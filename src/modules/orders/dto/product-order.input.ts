@@ -1,7 +1,8 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { Type } from 'class-transformer';
-import { IsCurrency, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { Types } from 'mongoose';
 
 @InputType({
   description: 'Input type for product order details',
@@ -13,7 +14,7 @@ export class ProductOrderInput {
   })
   @Type(() => ParseObjectIdPipe)
   @IsNotEmpty()
-  productId: string;
+  productId: Types.ObjectId;
 
   @Field(() => Int, {
     description: 'The quantity of the product',
@@ -23,13 +24,4 @@ export class ProductOrderInput {
   @IsInt()
   @Min(1)
   quantity: number;
-
-  @Field(() => Int, {
-    description: 'The price of the product',
-    nullable: false,
-  })
-  @IsNotEmpty()
-  @IsCurrency()
-  @Min(0)
-  price: number;
 }

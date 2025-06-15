@@ -31,8 +31,5 @@ export async function paginate<T>(
     itemCount: totalItems,
   });
 
-  console.log('Paginated items:', JSON.stringify(items, null, 2));
-  console.log('Pagination metadata:', JSON.stringify(meta, null, 2));
-
   return { items, meta };
 }
