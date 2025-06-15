@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { CheckAbility } from '@auth/decorators/check-ability.decorator';
 import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
 import { RESOURCES } from '@users/enums/resources.enum';
+import { UpdatePermissionFromRoleInput } from './dto/update-permission-from-role.input';
 
 @Resolver(() => Role)
 export class RolesResolver {
@@ -27,6 +28,28 @@ export class RolesResolver {
   })
   async createRole(@Args('createRoleInput') createRoleInput: CreateRoleInput) {
     return this.rolesService.create(createRoleInput);
+  }
+
+  @UseGuards(JwtAuthGuard, AbilitiesGuard)
+  @CheckAbility(ACTIONS_PERMISSIONS.UPDATE, RESOURCES.ROLES)
+  @Mutation(() => Role, {
+    description: 'Assign permissions to an existing role',
+  })
+  async assignPermissionsToRole(
+    @Args('updatePermissionFromRoleInput') updatePermissionFromRoleInput: UpdatePermissionFromRoleInput,
+  ) {
+    return this.rolesService.addPermissionToRole(updatePermissionFromRoleInput);
+  }
+
+  @UseGuards(JwtAuthGuard, AbilitiesGuard)
+  @CheckAbility(ACTIONS_PERMISSIONS.UPDATE, RESOURCES.ROLES)
+  @Mutation(() => Role, {
+    description: 'Remove permissions from an existing role',
+  })
+  async removePermissionsFromRole(
+    @Args('updatePermissionFromRoleInput') updatePermissionFromRoleInput: UpdatePermissionFromRoleInput,
+  ) {
+    return this.rolesService.removePermissionFromRole(updatePermissionFromRoleInput);
   }
 
   @ResolveField(() => [Permission], {

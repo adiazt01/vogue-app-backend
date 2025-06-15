@@ -11,11 +11,12 @@ import { AbilitiesGuard } from './guards/abilities.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesModule } from '@users/roles/roles.module';
 import { RolesService } from '@users/roles/roles.service';
+import { forwardRef } from '@nestjs/common';
 
 @Module({
   imports: [
-    UsersModule,
-    RolesModule,
+    forwardRef(() => UsersModule),
+    forwardRef(() => RolesModule),
     JwtModule.register({
       secret: envs.JWT_SECRET,
       signOptions: {

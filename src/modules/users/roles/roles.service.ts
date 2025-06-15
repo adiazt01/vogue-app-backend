@@ -9,13 +9,10 @@ import { Role } from './schemas/role.schema';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { CreateRoleInput } from './dto/create-role.input';
 import { PermissionsService } from './permissions/permissions.service';
-import {
-  Permission,
-  PermissionDocument,
-} from './permissions/schemas/permission.schema';
-import { PaginationRolesOptionsArgs } from './dto/pagination-roles-options.args';
+import { Permission } from './permissions/schemas/permission.schema';
 import { UpdatePermissionFromRoleInput } from './dto/update-permission-from-role.input';
 import { LoggerService } from '@common/logger/logger.service';
+import { PaginationRolesOptionsArgs } from './permissions/dto/pagination-permissions-options.args';
 
 @Injectable()
 export class RolesService {
@@ -37,7 +34,7 @@ export class RolesService {
       }
     }
 
-    let createdPermissions: PermissionDocument[] | undefined;
+    let createdPermissions: Permission[] | undefined = undefined;
 
     if (permissions) {
       createdPermissions = await this.permissionService.createMany(permissions);

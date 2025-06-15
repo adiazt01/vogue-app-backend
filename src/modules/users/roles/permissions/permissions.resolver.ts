@@ -28,7 +28,10 @@ export class PermissionsResolver {
 
   @UseGuards(JwtAuthGuard, AbilitiesGuard)
   @CheckAbility(ACTIONS_PERMISSIONS.READ, RESOURCES.PERMISSIONS)
-  @Query(() => [PaginatedPermissionsOutput], { name: 'permissions' })
-  async getAllPermissions(@Args() paginationPermissionsOptions: PaginationPermissionsOptionsArgs) {
+  @Query(() => PaginatedPermissionsOutput, { name: 'permissions' })
+  async getAllPermissions(
+    @Args() paginationPermissionsOptions: PaginationPermissionsOptionsArgs,
+  ) {
     return this.permissionsService.findAll(paginationPermissionsOptions);
   }
+}

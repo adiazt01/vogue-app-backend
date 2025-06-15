@@ -10,9 +10,12 @@ import {
 } from './permissions/schemas/permission.schema';
 import { RoleSeed } from './commands/seeds/roles.seed';
 import { PermissionsService } from './permissions/permissions.service';
+import { LoggerService } from '@common/logger/logger.service';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     PermissionsModule,
     MongooseModule.forFeature([
       {
@@ -25,7 +28,13 @@ import { PermissionsService } from './permissions/permissions.service';
       },
     ]),
   ],
-  providers: [RolesResolver, PermissionsService, RolesService, RoleSeed],
+  providers: [
+    RolesResolver,
+    PermissionsService,
+    RolesService,
+    RoleSeed,
+    LoggerService,
+  ],
   exports: [RolesService, PermissionsService],
 })
 export class RolesModule {}

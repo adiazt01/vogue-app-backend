@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersResolver } from './users.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -30,7 +30,7 @@ import { RolesService } from './roles/roles.service';
         schema: PermissionSchema,
       },
     ]),
-    RolesModule,
+    forwardRef(() => RolesModule),
   ],
   providers: [
     UsersService,
