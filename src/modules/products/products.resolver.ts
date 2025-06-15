@@ -23,6 +23,7 @@ import { PaginationProductsOptionsArgs } from './dto/pagination-products-options
 import { Category } from './categories/entities/category.entity';
 import { Tag } from './tags/entities/tag.entity';
 import { User } from '@users/entities/user.entity';
+import { Types } from 'mongoose';
 
 @Resolver(() => Product)
 export class ProductsResolver {
@@ -48,7 +49,7 @@ export class ProductsResolver {
   }
 
   @Query(() => Product, { name: 'product' })
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOne(@Args('id', { type: () => String }) id: Types.ObjectId) {
     return this.productsService.findOne(id);
   }
 

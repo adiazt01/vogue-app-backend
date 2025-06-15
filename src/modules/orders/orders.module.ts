@@ -7,6 +7,7 @@ import { AuthModule } from '@auth/auth.module';
 import { ProductsModule } from '@products/products.module';
 import { ProductsService } from '@products/products.service';
 import { LoggerService } from '@common/logger/logger.service';
+import { OrdersProductResolver } from './orders-product.resolver';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { LoggerService } from '@common/logger/logger.service';
     ProductsModule,
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
   ],
-  providers: [OrdersResolver, OrdersService, ProductsService, LoggerService],
+  providers: [OrdersResolver, OrdersProductResolver, OrdersService, ProductsService, LoggerService],
 })
-export class OrdersModule {}
+export class OrdersModule { }

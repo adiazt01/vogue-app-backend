@@ -65,7 +65,7 @@ export class ProductsService {
     return newProductFounded;
   }
 
-  async findOne(id: string) {
+  async findOne(id: Types.ObjectId) {
     const product = await this.productModel.findById(id);
 
     if (!product) throw new NotFoundException(`Product id ${id} is not valid`);
@@ -143,7 +143,6 @@ export class ProductsService {
 
   async reduceStock(
     reduceStockInput: UpdateStockProductInput,
-    session?: ClientSession | null,
   ) {
     const { productId, quantity } = reduceStockInput;
 
@@ -152,8 +151,7 @@ export class ProductsService {
     }
 
     const productFound = await this.productModel
-      .findById(productId)
-      .session(session ?? null);
+      .findById(productId);
 
     if (!productFound) {
       throw new NotFoundException(
@@ -168,7 +166,7 @@ export class ProductsService {
     }
 
     productFound.stock -= quantity;
-    await productFound.save({ session });
+    await productFound.save();
 
     this.loggerService.info(
       `Stock reduced for product ${productId.toString()}, new stock: ${productFound.stock}`,
