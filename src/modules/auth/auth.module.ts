@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { UsersModule } from '@users/users.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -12,6 +11,8 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesModule } from '@users/roles/roles.module';
 import { RolesService } from '@users/roles/roles.service';
 import { forwardRef } from '@nestjs/common';
+import { AuthService } from './services/auth.service';
+import { LoggerService } from '@common/logger/logger.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { forwardRef } from '@nestjs/common';
     AbilityFactory,
     AbilitiesGuard,
     JwtAuthGuard,
+    LoggerService,
   ],
   exports: [AbilityFactory, AbilitiesGuard, JwtAuthGuard, JwtStrategy],
 })

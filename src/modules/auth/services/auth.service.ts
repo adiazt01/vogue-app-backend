@@ -4,12 +4,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '@users/users.service';
-import { RegisterInput } from './dto/register.input';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { HashService } from '@common/hash/hash.service';
-import { LoginInput } from './dto/login.input';
 import { RolesService } from '@users/roles/roles.service';
+import { RefreshTokenInput } from '@auth/dto/refresh-token.input';
+import { envs } from '@config/env.config';
+import { Tokens } from '@auth/interfaces/tokens.interface';
+import { LoggerService } from '@common/logger/logger.service';
+import { RegisterInput } from '@auth/dto/register.input';
+import { JwtPayload } from '@auth/interfaces/jwt-payload.interface';
+import { LoginInput } from '@auth/dto/login.input';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +22,8 @@ export class AuthService {
     private readonly JwtService: JwtService,
     private readonly hashService: HashService,
     private readonly rolesService: RolesService,
-  ) {}
+    private readonly loggerService: LoggerService,
+  ) { }
 
   async register(registerInput: RegisterInput) {
     const registerUser = await this.usersService.create(registerInput);
@@ -47,11 +52,11 @@ export class AuthService {
       sub: _id.toString(),
     };
 
+    const { accessToken, refreshToken } = await this.generateTokens(jwtPayload);
+
     return {
-      accessToken: await this.JwtService.signAsync(jwtPayload),
-      refreshToken: await this.JwtService.signAsync(jwtPayload, {
-        expiresIn: '7d',
-      }),
+      accessToken,
+      refreshToken,
       user: registerUser,
     };
   }
@@ -77,12 +82,57 @@ export class AuthService {
       sub: _id.toString(),
     };
 
+    const { accessToken, refreshToken } = await this.generateTokens(jwtPayload);
+
     return {
-      accessToken: await this.JwtService.signAsync(jwtPayload),
-      refreshToken: await this.JwtService.signAsync(jwtPayload, {
-        expiresIn: '7d',
-      }),
+      accessToken,
+      refreshToken,
       user: userFound,
     };
+  }
+
+  async refreshToken(refreshTokenInput: RefreshTokenInput) {
+    const { refreshToken } = refreshTokenInput;
+
+    const payload = await this.JwtService.verifyAsync(refreshToken, {
+      secret: envs.JWT_REFRESH_SECRET,
+    });
+
+    const user = await this.usersService.findOne(payload.sub);
+
+    if (!user) throw new UnauthorizedException('Invalid refresh token');
+
+    const jwtPayload: JwtPayload = {
+      email: user.email,
+      username: user.username,
+      sub: user._id.toString(),
+    };
+
+    const { accessToken, refreshToken: newRefreshToken } = await this.generateTokens(jwtPayload);
+
+
+    return {
+      accessToken,
+      refreshToken: newRefreshToken,
+      user,
+    };
+  }
+
+  private async generateTokens(user: JwtPayload): Promise<Tokens> {
+    const accessToken = await this.JwtService.signAsync(user, {
+      expiresIn: envs.JWT_EXPIRATION,
+      secret: envs.JWT_SECRET,
+    });
+
+    const refreshToken = await this.JwtService.signAsync(user, {
+      expiresIn: envs.JWT_REFRESH_EXPIRATION,
+      secret: envs.JWT_REFRESH_SECRET,
+    });
+
+    if (!accessToken || !refreshToken) {
+      throw new InternalServerErrorException('Failed to generate tokens');
+    }
+
+    return { accessToken, refreshToken };
   }
 }

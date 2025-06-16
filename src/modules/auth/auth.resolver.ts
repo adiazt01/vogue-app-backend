@@ -1,18 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
 import { RegisterInput } from './dto/register.input';
 import { LoginInput } from './dto/login.input';
-import { CheckAbility } from './decorators/check-ability.decorator';
-import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
-import { UseGuards } from '@nestjs/common';
-import { AbilitiesGuard } from './guards/abilities.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RESOURCES } from '@users/enums/resources.enum';
+import { AuthService } from './services/auth.service';
+import { RefreshTokenInput } from './dto/refresh-token.input';
 
 @Resolver(() => Auth)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Mutation(() => Auth, {
     name: 'RegisterUser',
@@ -30,14 +25,11 @@ export class AuthResolver {
     return this.authService.login(loginInput);
   }
 
-  // Test authentication guard
-  @UseGuards(JwtAuthGuard, AbilitiesGuard)
-  @CheckAbility(ACTIONS_PERMISSIONS.CREATE, RESOURCES.USERS)
-  @Query(() => String, {
-    name: 'TestAuth',
-    description: 'Test endpoint to verify authentication guard',
+  @Mutation(() => Auth, {
+    name: 'RefreshToken',
+    description: 'Refresh the authentication tokens for a user',
   })
-  testAuth() {
-    return 'Authentication successful';
+  refreshToken(@Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput) {
+    return this.authService.refreshToken(refreshTokenInput);
   }
 }

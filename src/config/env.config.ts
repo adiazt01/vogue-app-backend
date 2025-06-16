@@ -5,8 +5,10 @@ interface Envs {
   PORT: number;
   MONGO_URL: string;
   JWT_SECRET: string;
+  JWT_REFRESH_SECRET: string;
   SALT_ROUNDS: number;
   JWT_EXPIRATION: string;
+  JWT_REFRESH_EXPIRATION: string;
   NODE_ENV: string;
 }
 
@@ -15,8 +17,10 @@ const envsSchema = joi
     PORT: joi.number().required(),
     MONGO_URL: joi.string().uri().required(),
     JWT_SECRET: joi.string().min(10).required(),
+    JWT_REFRESH_SECRET: joi.string().min(10).required(),
     SALT_ROUNDS: joi.number().integer().min(1).required(),
     JWT_EXPIRATION: joi.string().required(),
+    JWT_REFRESH_EXPIRATION: joi.string().required(),
     NODE_ENV: joi
       .string()
       .valid('development', 'production', 'test')
