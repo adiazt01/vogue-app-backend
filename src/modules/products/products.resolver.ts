@@ -87,6 +87,7 @@ export class ProductsResolver {
 
   @ResolveField(() => [Tag], {
     description: 'Get the tags of the product',
+    nullable: true,
   })
   async tags(@Parent() product: Product) {
     return this.productsService.findProductTags(

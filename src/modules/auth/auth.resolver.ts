@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Auth } from './entities/auth.entity';
 import { RegisterInput } from './dto/register.input';
 import { LoginInput } from './dto/login.input';
@@ -32,4 +32,8 @@ export class AuthResolver {
   refreshToken(@Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput) {
     return this.authService.refreshToken(refreshTokenInput);
   }
+
+  // TODO Reset password for user with otp
+  // TODO Confirm email for user with otp
+  // TODO Delete user account with OTP confirmation
 }
