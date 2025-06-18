@@ -9,6 +9,7 @@ interface Envs {
   SALT_ROUNDS: number;
   JWT_EXPIRATION: string;
   JWT_REFRESH_EXPIRATION: string;
+  OTP_EXPIRATION_MINUTES: number;
   NODE_ENV: string;
 }
 
@@ -21,6 +22,7 @@ const envsSchema = joi
     SALT_ROUNDS: joi.number().integer().min(1).required(),
     JWT_EXPIRATION: joi.string().required(),
     JWT_REFRESH_EXPIRATION: joi.string().required(),
+    OTP_EXPIRATION_MINUTES: joi.number().integer().required(),
     NODE_ENV: joi
       .string()
       .valid('development', 'production', 'test')

@@ -6,14 +6,16 @@ import { envs } from 'src/config/env.config';
 export class HashService {
   private readonly saltRounds: number = Number(envs.SALT_ROUNDS);
 
-  async hash(password: string): Promise<string> {
+  async hash(data: string): Promise<string> {
     try {
-      return await bcrypt.hash(password, this.saltRounds);
+      return await bcrypt.hash(data, this.saltRounds);
     } catch (error) {
       console.error('Hashing error:', error);
       throw new Error('Hashing failed: Unknown error');
     }
   }
+
+  
 
   async compare(input: string, inputHashed: string): Promise<boolean> {
     try {

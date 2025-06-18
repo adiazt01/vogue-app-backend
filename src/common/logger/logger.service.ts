@@ -1,3 +1,4 @@
+import { HashService } from '@common/hash/hash.service';
 import { Injectable } from '@nestjs/common';
 import * as winston from 'winston';
 
@@ -39,7 +40,7 @@ const customFormat = printf(
 export class LoggerService {
   private readonly logger: winston.Logger;
 
-  constructor() {
+  constructor(private readonly hashService: HashService) {
     this.logger = winston.createLogger({
       level: 'debug',
       format: combine(
@@ -94,6 +95,12 @@ export class LoggerService {
   info(message: string) {
     this.logger.info(message);
   }
+
+  // TODO Create a service for encrypt data, this is different from hasshing because the hashing only works one way, encryption can be reversed
+  // encrypt(message: string, sensitiveData: string) {
+  //   const encryptedData = this.hashService.encrypt(sensitiveData);
+  //   this.logger.info(`${message}: ${sensitiveData}`);
+  // }
 
   silly(message: string) {
     this.logger.silly(message);

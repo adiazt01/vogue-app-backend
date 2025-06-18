@@ -13,6 +13,8 @@ import { RolesService } from '@users/roles/roles.service';
 import { forwardRef } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { LoggerService } from '@common/logger/logger.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Otp, OtpSchema } from './schemas/otp.schema';
 
 @Module({
   imports: [
@@ -24,6 +26,10 @@ import { LoggerService } from '@common/logger/logger.service';
         expiresIn: '1d',
       },
     }),
+    MongooseModule.forFeature([{
+      name: Otp.name,
+      schema: OtpSchema,
+    }])
   ],
   providers: [
     AuthResolver,
@@ -38,4 +44,4 @@ import { LoggerService } from '@common/logger/logger.service';
   ],
   exports: [AbilityFactory, AbilitiesGuard, JwtAuthGuard, JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

@@ -3,7 +3,7 @@ import { HashService } from '@common/hash/hash.service';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { / Aquí deberías pedir el nuevo password como input adicional
 import { AssignRoleUserInput } from './dto/assign-role-user.input';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -82,6 +82,8 @@ export class UsersService {
 
     return userFound;
   }
+
+  async updatePassword(
 
   async assignRoleToUser(assignRoleUserInput: AssignRoleUserInput) {
     const { roleId, userId } = assignRoleUserInput;

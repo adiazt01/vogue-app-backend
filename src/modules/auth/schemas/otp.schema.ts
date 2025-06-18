@@ -1,7 +1,7 @@
 import { OTP_ACTION } from "@auth/enums/otp-action.enum";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { User } from "@users/schemas/user.schema";
-import { Types } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 
 @Schema({
     timestamps: true,
@@ -39,6 +39,6 @@ export class Otp {
     expiresAt: Date;
 }
 
-export type OtpDocument = 
+export type OtpDocument = HydratedDocument<Otp>;
 
 export const OtpSchema = SchemaFactory.createForClass(Otp);

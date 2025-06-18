@@ -4,6 +4,9 @@ import { RegisterInput } from './dto/register.input';
 import { LoginInput } from './dto/login.input';
 import { AuthService } from './services/auth.service';
 import { RefreshTokenInput } from './dto/refresh-token.input';
+import { SendOtpInput } from './dto/send-otp.input';
+
+// TODO create a public api key for the front end api
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -34,6 +37,14 @@ export class AuthResolver {
   }
 
   // TODO Reset password for user with otp
+  @Mutation(() => Boolean, {
+    name: 'SendOtp',
+    description: 'Send an OTP to the user for password reset',
+  })
+  sendOtp(@Args('sendOtpInput') sendOtpInput: SendOtpInput) {
+    return this.authService.sendOtp(sendOtpInput);
+  }
+
   // TODO Confirm email for user with otp
   // TODO Delete user account with OTP confirmation
 }
