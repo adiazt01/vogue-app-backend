@@ -23,7 +23,7 @@ import { Otp, OtpSchema } from './schemas/otp.schema';
     JwtModule.register({
       secret: envs.JWT_SECRET,
       signOptions: {
-        expiresIn: '1d',
+        expiresIn: envs.JWT_EXPIRATION,
       },
     }),
     MongooseModule.forFeature([{
