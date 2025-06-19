@@ -70,6 +70,7 @@ export class UsersService {
   }
 
   // TODO Este metodo se deberia desacoplar y dividirlo entre metodos tales como, actualizar email, actualizar password, etc. Para tener una mejor auditoria
+  
   async update(id: string, updateUserInput: UpdateUserInput) {
     const userFound = await this.userModel.findByIdAndUpdate(
       id,

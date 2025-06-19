@@ -226,6 +226,7 @@ export class AuthService {
         throw new InternalServerErrorException('Unknown OTP action');
     }
 
+    // TODO: Send email notification about OTP verification
     return true;
   }
 
