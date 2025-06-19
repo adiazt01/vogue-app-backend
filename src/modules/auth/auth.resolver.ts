@@ -7,7 +7,6 @@ import { RefreshTokenInput } from './dto/refresh-token.input';
 import { SendOtpInput } from './dto/send-otp.input';
 import { VerifyOtpInput } from './dto/verify-otp.input';
 
-// TODO create a public api key for the front end api
 @Resolver(() => Auth)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) { }
