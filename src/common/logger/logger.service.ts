@@ -39,8 +39,9 @@ const customFormat = printf(
 @Injectable()
 export class LoggerService {
   private readonly logger: winston.Logger;
-
-  constructor(private readonly hashService: HashService) {
+  private readonly hashService: HashService;
+  
+  constructor() {
     this.logger = winston.createLogger({
       level: 'debug',
       format: combine(

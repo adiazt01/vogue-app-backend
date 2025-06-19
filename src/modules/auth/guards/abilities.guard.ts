@@ -9,13 +9,14 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AbilitiesGuard implements CanActivate {
   constructor(
     private readonly abilityFactory: AbilityFactory,
     private readonly reflector: Reflector,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const action = this.reflector.get<string>('action', context.getHandler());
@@ -36,7 +37,7 @@ export class AbilitiesGuard implements CanActivate {
 
     const user = gqlContext.req.user as JwtPayload;
 
-    const ability = await this.abilityFactory.defineAbilityForUser(user.sub);
+    const ability = await this.abilityFactory.defineAbilityForUser(user.sub as Types.ObjectId);
 
     if (!ability.can(action, resource)) {
       throw new ForbiddenException(

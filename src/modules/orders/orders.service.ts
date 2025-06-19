@@ -19,11 +19,13 @@ export class OrdersService {
     private readonly loggerService: LoggerService,
   ) { }
 
-  async create(createOrderInput: CreateOrderInput, userId: string) {
+  async create(createOrderInput: CreateOrderInput, userId: Types.ObjectId) {
     const { products } = createOrderInput;
+    
     this.loggerService.debug(
       `Creating order for user ${userId} with products: ${JSON.stringify(products)}`,
     );
+    
     const productsValidates =
       await this.productsService.validateProductsAndStock({
         products: products.map((p) => ({

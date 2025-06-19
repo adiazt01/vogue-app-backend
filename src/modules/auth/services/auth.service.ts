@@ -61,7 +61,7 @@ export class AuthService {
     const jwtPayload: JwtPayload = {
       email,
       username,
-      sub: _id.toString(),
+      sub: _id,
     };
 
     const { accessToken, refreshToken } = await this.generateTokens(jwtPayload);
@@ -91,7 +91,7 @@ export class AuthService {
     const jwtPayload: JwtPayload = {
       email,
       username,
-      sub: _id.toString(),
+      sub: _id,
     };
 
     const { accessToken, refreshToken } = await this.generateTokens(jwtPayload);
@@ -117,7 +117,7 @@ export class AuthService {
     const jwtPayload: JwtPayload = {
       email: user.email,
       username: user.username,
-      sub: user._id.toString(),
+      sub: user._id,
     };
 
     const { accessToken, refreshToken: newRefreshToken } = await this.generateTokens(jwtPayload);

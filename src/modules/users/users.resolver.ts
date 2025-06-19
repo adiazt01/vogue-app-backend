@@ -13,6 +13,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { PaginatedUsersOutput } from './dto/paginated-users.output';
 import { PaginationOptionsDto } from '@common/dtos/pagination/pagination-options.dto';
 import { Role } from './roles/entities/role.entity';
+import { Types } from 'mongoose';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -32,18 +33,13 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOne(@Args('id', { type: () => String }) id: Types.ObjectId) {
     return this.usersService.findOne(id);
   }
 
   @Mutation(() => User)
   updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
     return this.usersService.update(updateUserInput.id, updateUserInput);
-  }
-
-  @Mutation(() => User)
-  removeUser(@Args('id', { type: () => String }) id: string) {
-    return this.usersService.remove(id);
   }
 
   @ResolveField(() => [Role], {

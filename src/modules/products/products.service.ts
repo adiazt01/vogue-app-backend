@@ -27,7 +27,7 @@ export class ProductsService {
     private readonly loggerService: LoggerService,
   ) {}
 
-  async create(createProductInput: CreateProductInput, userId: string) {
+  async create(createProductInput: CreateProductInput, userId: Types.ObjectId ) {
     const { name, price, description, categoryId, stock, tags } =
       createProductInput;
 
@@ -134,7 +134,7 @@ export class ProductsService {
     return productsFound;
   }
 
-  async isProductNameTaken(userId: string, name: string) {
+  async isProductNameTaken(userId: Types.ObjectId, name: string) {
     return await this.productModel.findOne({
       userId,
       name,

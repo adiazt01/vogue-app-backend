@@ -8,6 +8,7 @@ import {
 import { UsersService } from '@users/users.service';
 import { ACTIONS_PERMISSIONS } from '@users/enums/actions-permissions.enum';
 import { RESOURCES } from '@users/enums/resources.enum';
+import { Types } from 'mongoose';
 
 export type AppAbility = MongoAbility<[ACTIONS_PERMISSIONS, RESOURCES]>;
 
@@ -15,7 +16,7 @@ export type AppAbility = MongoAbility<[ACTIONS_PERMISSIONS, RESOURCES]>;
 export class AbilityFactory {
   constructor(private readonly usersService: UsersService) {}
 
-  async defineAbilityForUser(userId: string): Promise<MongoAbility> {
+  async defineAbilityForUser(userId: Types.ObjectId): Promise<MongoAbility> {
     const userWithRoles = await this.usersService.findOne(userId);
 
     if (!userWithRoles || !userWithRoles.roles || !userWithRoles.roles.length) {
