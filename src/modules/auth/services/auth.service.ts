@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -21,6 +22,7 @@ import { Model } from 'mongoose';
 import { addMinutes } from 'date-fns';
 import { randomInt } from 'node:crypto';
 import { OTP_ACTION } from '@auth/enums/otp-action.enum';
+import { VerifyOtpInput } from '@auth/dto/verify-otp.input';
 
 @Injectable()
 export class AuthService {
@@ -183,12 +185,12 @@ export class AuthService {
   }
 
   async verifyOtp(verifyOtpInput: VerifyOtpInput) {
-    const { email, otp, action } = verifyOtpInput;
+    const { email, otp, action, password } = verifyOtpInput;
 
     const user = await this.usersService.findOneByEmail(email);
+
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    // Busca el OTP válido y no expirado
     const otpDoc = await this.otpModel.findOne({
       user: user._id,
       code: otp,
@@ -200,14 +202,19 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired OTP');
     }
 
-    // OTP válido, elimina o marca como usado
     await this.otpModel.deleteOne({ _id: otpDoc._id });
 
-    // Ejecuta la acción correspondiente
     switch (action) {
       case OTP_ACTION.RESET_PASSWORD:
-        // Aquí deberías pedir el nuevo password como input adicional
-        // Ejemplo: await this.usersService.updatePassword(user._id, newPassword);
+        if (!password) {
+          throw new BadRequestException('Password is required for reset');
+        }
+
+        await this.usersService.updatePassword({
+          id: user._id,
+          password: password,
+        });
+
         break;
       case OTP_ACTION.CONFIRM_EMAIL:
         await this.usersService.verifyEmail(user._id);

@@ -3,7 +3,6 @@ import { HashService } from '@common/hash/hash.service';
 import { paginate } from '@common/utils/pagination/paginate.util';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { / Aquí deberías pedir el nuevo password como input adicional
 import { AssignRoleUserInput } from './dto/assign-role-user.input';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -11,6 +10,8 @@ import { Role } from './roles/schemas/role.schema';
 import { User, UserDocument } from './schemas/user.schema';
 import { LoggerService } from '@common/logger/logger.service';
 import { RolesService } from './roles/roles.service';
+import { UpdateUserPasswordFromForgotPasswordInput } from './dto/update-user-password.input';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,7 @@ export class UsersService {
     private readonly rolesService: RolesService,
     private readonly hashService: HashService,
     private readonly loggerService: LoggerService,
-  ) {}
+  ) { }
 
   async create(createUserInput: CreateUserInput) {
     const { password } = createUserInput;
@@ -46,7 +47,7 @@ export class UsersService {
     );
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: Types.ObjectId): Promise<User> {
     const userFound = await this.userModel
       .findById(id)
       .populate({
@@ -83,12 +84,58 @@ export class UsersService {
     return userFound;
   }
 
-  async updatePassword(
+  async updatePassword(UpdateUserPasswordFromForgotPasswordInput: UpdateUserPasswordFromForgotPasswordInput) {
+    const { password, id } = UpdateUserPasswordFromForgotPasswordInput;
+
+    const userFound = await this.findOne(id);
+
+    if (!userFound) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const hashedPassword = await this.hashService.hash(password);
+
+    userFound.password = hashedPassword;
+
+    await userFound.save();
+
+    this.loggerService.log(
+      `Password updated for user with ID ${id}`
+    );
+
+    return userFound;
+  }
+
+  async verifyEmail(userId: Types.ObjectId) {
+    const userFound = await this.userModel.findById(userId);
+
+    if (!userFound)
+      throw new NotFoundException(`User with ID ${userId} not found`);
+
+    userFound.isVerified = true;
+
+    await userFound.save();
+
+    return userFound;
+  }
+
+  async deleteUser(userId: Types.ObjectId) {
+    const userFound = await this.findOne(userId);
+
+    if (!userFound)
+      throw new NotFoundException(`User with ID ${userId} not found`);
+
+    userFound.isActive = false;
+
+    await userFound.save();
+
+    return userFound;
+  }
 
   async assignRoleToUser(assignRoleUserInput: AssignRoleUserInput) {
     const { roleId, userId } = assignRoleUserInput;
 
-    const userFound = await this.userModel.findById(userId);
+    const userFound = await this.findOne(userId);
 
     if (!userFound)
       throw new NotFoundException(
@@ -127,13 +174,5 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${userId} not found`);
 
     return userFound.roles;
-  }
-
-  async remove(id: string) {
-    const userFound = await this.userModel.findByIdAndDelete(id);
-
-    if (!userFound) throw new NotFoundException(`User with ID ${id} not found`);
-
-    return userFound;
   }
 }

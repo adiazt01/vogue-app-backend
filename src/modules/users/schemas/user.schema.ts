@@ -17,6 +17,12 @@ export class User extends Document {
   @Prop({ required: true })
   username: string;
 
+  @Prop({ default: false })
+  isVerified: boolean;
+
+  @Prop({ default: false })
+  isActive: boolean;
+
   @Prop({
     type: [{ type: Types.ObjectId, ref: Role.name }],
   })

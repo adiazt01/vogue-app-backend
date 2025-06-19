@@ -1,7 +1,11 @@
-import { Field } from "@nestjs/graphql";
-import { IsEmail, IsStrongPassword } from "class-validator";
+import { Field, InputType } from "@nestjs/graphql";
+import { IsEmail, IsMongoId, IsStrongPassword } from "class-validator";
+import { Types } from "mongoose";
 
-export class UpdateUserPassowrdFromForgotPasswordInput {
+@InputType({
+    description: "Input type for updating user password from forgot password flow",
+})
+export class UpdateUserPasswordFromForgotPasswordInput {
     @Field(() => String, {
         description: "The new password for the user",
     })
@@ -15,8 +19,8 @@ export class UpdateUserPassowrdFromForgotPasswordInput {
     password: string;
 
     @Field(() => String, {
-        description: "The email of the user",
+        description: "The ID of the user",
     })
-    @IsEmail()
-    email: string;
+    @IsMongoId()
+    id: Types.ObjectId;
 }
