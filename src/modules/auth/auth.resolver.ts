@@ -8,7 +8,6 @@ import { SendOtpInput } from './dto/send-otp.input';
 import { VerifyOtpInput } from './dto/verify-otp.input';
 
 // TODO create a public api key for the front end api
-
 @Resolver(() => Auth)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) { }
@@ -37,7 +36,6 @@ export class AuthResolver {
     return this.authService.refreshToken(refreshTokenInput);
   }
 
-  // TODO Reset password for user with otp
   @Mutation(() => Boolean, {
     name: 'SendOtp',
     description: 'Send an OTP to the user for password reset',
