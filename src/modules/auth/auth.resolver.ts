@@ -5,6 +5,7 @@ import { LoginInput } from './dto/login.input';
 import { AuthService } from './services/auth.service';
 import { RefreshTokenInput } from './dto/refresh-token.input';
 import { SendOtpInput } from './dto/send-otp.input';
+import { VerifyOtpInput } from './dto/verify-otp.input';
 
 // TODO create a public api key for the front end api
 
@@ -45,6 +46,11 @@ export class AuthResolver {
     return this.authService.sendOtp(sendOtpInput);
   }
 
-  // TODO Confirm email for user with otp
-  // TODO Delete user account with OTP confirmation
+  @Mutation(() => Boolean, {
+    name: 'VerifyOtp',
+    description: 'Verify the OTP sent to the user',
+  })
+  verifyOtp(@Args('verifyOtpInput') verifyOtpInput: VerifyOtpInput) {
+    return this.authService.verifyOtp(verifyOtpInput);
+  }
 }
