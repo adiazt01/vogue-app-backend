@@ -8,7 +8,7 @@ interface Envs {
   JWT_REFRESH_SECRET: string;
   SALT_ROUNDS: number;
   JWT_EXPIRATION: string;
-  JWT_REFRESH_EXPIRATION: string;
+  JWT_EXPIRATION_REFRESH: string;
   OTP_EXPIRATION_MINUTES: number;
   NODE_ENV: string;
 }
@@ -21,7 +21,7 @@ const envsSchema = joi
     JWT_REFRESH_SECRET: joi.string().min(10).required(),
     SALT_ROUNDS: joi.number().integer().min(1).required(),
     JWT_EXPIRATION: joi.string().required(),
-    JWT_REFRESH_EXPIRATION: joi.string().required(),
+    JWT_EXPIRATION_REFRESH: joi.string().required(),
     OTP_EXPIRATION_MINUTES: joi.number().integer().required(),
     NODE_ENV: joi
       .string()

@@ -237,7 +237,7 @@ export class AuthService {
     });
 
     const refreshToken = await this.JwtService.signAsync(user, {
-      expiresIn: envs.JWT_REFRESH_EXPIRATION,
+      expiresIn: envs.JWT_EXPIRATION_REFRESH,
       secret: envs.JWT_REFRESH_SECRET,
     });
 
