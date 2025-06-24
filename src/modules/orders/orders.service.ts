@@ -124,7 +124,6 @@ export class OrdersService {
     return orderFounded;
   }
 
-  // RESOLVERS
   async getBuyerFromOrder(orderId: Types.ObjectId) {
     const orderFound = await this.orderModel.findById(orderId).populate('buyer');
 
