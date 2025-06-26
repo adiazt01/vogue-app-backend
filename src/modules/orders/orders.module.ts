@@ -16,5 +16,6 @@ import { OrdersProductResolver } from './orders-product.resolver';
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
   ],
   providers: [OrdersResolver, OrdersProductResolver, OrdersService, ProductsService, LoggerService],
+  exports: [OrdersService, MongooseModule, LoggerService],
 })
 export class OrdersModule { }

@@ -21,11 +21,11 @@ export class OrdersService {
 
   async create(createOrderInput: CreateOrderInput, userId: Types.ObjectId) {
     const { products } = createOrderInput;
-    
+
     this.loggerService.debug(
       `Creating order for user ${userId} with products: ${JSON.stringify(products)}`,
     );
-    
+
     const productsValidates =
       await this.productsService.validateProductsAndStock({
         products: products.map((p) => ({
@@ -92,7 +92,9 @@ export class OrdersService {
   }
 
   async findOne(id: Types.ObjectId) {
-    const orderFounded = await this.orderModel.findById(id);
+    const orderFounded = await this.orderModel.findById(id)
+      .populate('products.product');
+
 
     if (!orderFounded) {
       this.loggerService.error(`Order with ID ${id} not found`);
@@ -139,7 +141,7 @@ export class OrdersService {
     const orderFound = await this.orderModel
       .findById(orderId)
       .populate('products.product');
-
+    console.log('Order found:', orderFound);
     if (!orderFound) {
       this.loggerService.error(`Order with ID ${orderId} not found`);
       throw new NotFoundException(`Order not found with ID ${orderId}`);

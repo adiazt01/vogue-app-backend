@@ -11,6 +11,8 @@ interface Envs {
   JWT_EXPIRATION_REFRESH: string;
   OTP_EXPIRATION_MINUTES: number;
   NODE_ENV: string;
+  STRIPE_SECRET_KEY: string;
+  FRONTEND_URL: string;
 }
 
 const envsSchema = joi
@@ -27,6 +29,8 @@ const envsSchema = joi
       .string()
       .valid('development', 'production', 'test')
       .required(),
+    STRIPE_SECRET_KEY: joi.string().required(),
+    FRONTEND_URL: joi.string().uri().required(),
   })
   .unknown(true);
 

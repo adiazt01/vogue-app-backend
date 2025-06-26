@@ -15,6 +15,7 @@ import { User } from '@users/entities/user.entity';
 import { OrderProduct } from './entities/order-product.entity';
 import { PaginationOrdersOptionsArgs } from './dto/pagination-products-options.args';
 import { Types } from 'mongoose';
+import { PaginatedOrdersOutput } from './dto/paginated-products.output';
 
 @Resolver(() => Order)
 export class OrdersResolver {
@@ -30,9 +31,9 @@ export class OrdersResolver {
     return this.ordersService.create(createOrderInput, user.sub);
   }
 
-  @UseGuards(JwtAuthGuard, AbilitiesGuard)
-  @CheckAbility(ACTIONS_PERMISSIONS.READ, RESOURCES.ORDERS)
-  @Query(() => [Order], { name: 'orders' })
+  // @UseGuards(JwtAuthGuard, AbilitiesGuard)
+  // @CheckAbility(ACTIONS_PERMISSIONS.READ, RESOURCES.ORDERS)
+  @Query(() => PaginatedOrdersOutput, { name: 'orders' })
   findAll(@Args() paginationOrdersOptionsArgs: PaginationOrdersOptionsArgs) {
     return this.ordersService.findAll(paginationOrdersOptionsArgs);
   }

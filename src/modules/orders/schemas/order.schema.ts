@@ -32,14 +32,8 @@ export class Order extends Document {
   products: Array<{
     product: Product;
     quantity: number;
-    price: number;
     seller: User;
   }>;
-
-  @Prop({
-    required: true,
-  })
-  total: number;
 
   @Prop({
     enum: StatusOrder,
